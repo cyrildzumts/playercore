@@ -1,0 +1,59 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="org.mpris.MediaPlayer2">
+    <property name="ApplicationName" type="s" access="readwrite"/>
+    <property name="CanQuit" type="b" access="read"/>
+    <property name="CanRaise" type="b" access="read"/>
+    <property name="HasTrackList" type="b" access="read"/>
+    <property name="Identity" type="s" access="read"/>
+    <property name="DesktopEntry" type="s" access="read"/>
+    <property name="SupportedMimeTypes" type="as" access="read"/>
+    <signal name="RaiseMainWindow">
+    </signal>
+    <signal name="quitActivated">
+    </signal>
+    <method name="ApplicationName">
+      <arg type="s" direction="out"/>
+    </method>
+    <method name="setApplicationName">
+      <arg name="name" type="s" direction="in"/>
+    </method>
+    <method name="CanQuit">
+      <arg type="b" direction="out"/>
+    </method>
+    <method name="CanRaise">
+      <arg type="b" direction="out"/>
+    </method>
+    <method name="HasTrackList">
+      <arg type="b" direction="out"/>
+    </method>
+    <method name="Identity">
+      <arg type="s" direction="out"/>
+    </method>
+    <method name="DesktopEntry">
+      <arg type="s" direction="out"/>
+    </method>
+    <method name="SupportedUriSchemes">
+      <arg type="as" direction="out"/>
+    </method>
+    <method name="SupportedMimeTypes">
+      <arg type="as" direction="out"/>
+    </method>
+    <method name="CanSetFullscreen">
+      <arg type="b" direction="out"/>
+    </method>
+    <method name="Fullscreen">
+      <arg type="b" direction="out"/>
+    </method>
+    <method name="SetFullscreen">
+      <arg type="b" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="raise">
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="quit">
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+  </interface>
+</node>

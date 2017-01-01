@@ -1,0 +1,119 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN" "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+  <interface name="org.mpris.MediaPlayer2.Player">
+    <property name="ApplicationName" type="s" access="readwrite"/>
+    <property name="PlaybackStatus" type="s" access="read"/>
+    <property name="LoopStatus" type="s" access="readwrite"/>
+    <property name="Rate" type="d" access="readwrite"/>
+    <property name="Shuffle" type="b" access="readwrite"/>
+    <property name="Metadata" type="a{sv}" access="read">
+      <annotation name="org.qtproject.QtDBus.QtTypeName" value="QVariantMap"/>
+    </property>
+    <property name="Volume" type="d" access="readwrite"/>
+    <property name="Position" type="x" access="read"/>
+    <property name="MinimumRate" type="d" access="read"/>
+    <property name="MaximumRate" type="d" access="read"/>
+    <property name="CanGoNext" type="b" access="read"/>
+    <property name="CanGoPrevious" type="b" access="read"/>
+    <property name="CanPlay" type="b" access="read"/>
+    <property name="CanPause" type="b" access="read"/>
+    <property name="CanSeek" type="b" access="read"/>
+    <property name="CanControl" type="b" access="read"/>
+    <signal name="Seeked">
+      <arg name="position" type="x" direction="out"/>
+    </signal>
+    <signal name="nextClicked">
+    </signal>
+    <signal name="PreviousClicked">
+    </signal>
+    <signal name="playClicked">
+    </signal>
+    <signal name="stopClicked">
+    </signal>
+    <signal name="positionChanged">
+      <arg type="i" direction="out"/>
+    </signal>
+    <method name="ApplicationName">
+      <arg type="s" direction="out"/>
+    </method>
+    <method name="setApplicationName">
+      <arg name="name" type="s" direction="in"/>
+    </method>
+    <method name="PlaybackStatus">
+      <arg type="s" direction="out"/>
+    </method>
+    <method name="LoopStatus">
+      <arg type="s" direction="out"/>
+    </method>
+    <method name="SetLoopStatus">
+      <arg name="Status" type="s" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="Rate">
+      <arg type="d" direction="out"/>
+    </method>
+    <method name="SetRate">
+      <arg name="rate" type="d" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="MaximumRate">
+      <arg type="d" direction="out"/>
+    </method>
+    <method name="MinimumRate">
+      <arg type="d" direction="out"/>
+    </method>
+    <method name="Shuffle">
+      <arg type="b" direction="out"/>
+    </method>
+    <method name="SetShuffle">
+      <arg name="shuffle" type="b" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="CanGoNext">
+      <arg type="b" direction="out"/>
+    </method>
+    <method name="CanGoPrevious">
+      <arg type="b" direction="out"/>
+    </method>
+    <method name="CanPlay">
+      <arg type="b" direction="out"/>
+    </method>
+    <method name="CanPause">
+      <arg type="b" direction="out"/>
+    </method>
+    <method name="CanControl">
+      <arg type="b" direction="out"/>
+    </method>
+    <method name="Next">
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="Previous">
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="Pause">
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="PlayPause">
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="Stop">
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="Play">
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="Seek">
+      <arg name="offset" type="x" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="SetPosition">
+      <arg name="trackId" type="o" direction="in"/>
+      <arg name="offset" type="x" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+    <method name="OpenUri">
+      <arg name="uri" type="s" direction="in"/>
+      <annotation name="org.freedesktop.DBus.Method.NoReply" value="true"/>
+    </method>
+  </interface>
+</node>
