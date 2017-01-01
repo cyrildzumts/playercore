@@ -197,7 +197,7 @@ void MPRIS2_PLAYER::setMetaData(Track &track)
     last_metadata_["xesam:title"] = track.title;
     last_metadata_["xesam:artist"] = track.artist;
     last_metadata_["xesam:genre"] = track.genre;
-    last_metadata_["mpris:artUrl"] = "file://" + TestTagReader::cover(track.path);
+    last_metadata_["mpris:artUrl"] = "file://" + Tagreader::cover(track.path);
     last_metadata_ ["xesam:url"] = "file://" + track.path;
     QDBusMessage msg = QDBusMessage::createSignal(
             objectPath, freeDesktopObjectPath, "PropertiesChanged");

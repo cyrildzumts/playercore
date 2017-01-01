@@ -2,7 +2,7 @@
 #define MPRIS2_PLAYER_H
 
 //#include <QDBusAbstractAdaptor>
-#include "track.h"
+#include "common.h"
 #include "tagreader.h"
 #include <QtDBus>
 
