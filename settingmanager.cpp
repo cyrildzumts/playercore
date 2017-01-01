@@ -1,5 +1,23 @@
 #include "settingmanager.h"
 
+// InexistentConfigException
+InexistentConfigException::InexistentConfigException()
+{
+    this->message = __FUNCTION__ + std::string(" : Configuration File doesn't exist.");
+}
+InexistentConfigException::InexistentConfigException(const std::string &filename)
+{
+    this->message = __FUNCTION__ +
+            std::string(" : Configuration File ") +
+            filename +
+            " doesn't exist";
+}
+
+
+const char* InexistentConfigException::what() const noexcept
+    {
+        return message.c_str();
+    }
 
 SettingManager::SettingManager()
 {
@@ -266,7 +284,7 @@ void SettingManager::init()
        else
        {
            qWarning("Couldn't open conf file.");
-           throw std::invalid_argument(conf.toStdString().c_str());
+           throw InexistentConfigException(conf.toStdString().c_str());
        }
 
 }

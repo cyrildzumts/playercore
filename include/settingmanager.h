@@ -10,6 +10,25 @@
 #include <QDebug>
 #include <vector>
 
+#include <exception>
+#include <string>
+class InexistentConfigException : public std::exception
+{
+public:
+    InexistentConfigException();
+    InexistentConfigException(const std::string &filename);
+
+
+
+    // exception interface
+public:
+    virtual const char *what() const noexcept override;
+
+private:
+    std::string message;
+};
+
+
 
 class ISettingManager
 {
