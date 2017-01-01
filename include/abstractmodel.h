@@ -6,7 +6,7 @@
 #include "dataaccessobject.h"
 #include "common.h"
 
-#define UserRole 0x0100
+constexpr int UserRole  = 0x0100;
 constexpr int FIRST = 0;
 enum TrackRole
 {
