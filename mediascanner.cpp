@@ -21,6 +21,8 @@ MediaScanner::MediaScanner(AbstractDataAccessObject *data_access)
                       << QString("*.wma");
 
     queryScanner = data_access->query(QString());
+    setConfig();
+    databaseConfig();
 }
 
 MediaScanner::~MediaScanner()
@@ -36,6 +38,67 @@ MediaScanner::~MediaScanner()
 
 // TODO : MOVE EVERY database query to DataaccessObject
 void MediaScanner::scanSourceDirectory()
+{
+    /******************************************
+         * If the source directory was not yet scanned,
+         * we scann it, if not we simply look for changes
+         * through launchUpdateThread()
+         */
+    std::cout <<"Running " <<  __PRETTY_FUNCTION__  << std::endl;
+    if(hasDataAccessObject())
+    {
+        QSqlQuery query = data_access->query("BEGIN TRANSACTION;");
+        //query.exec("BEGIN TRANSACTION;");
+        if(!isSourceDirectoryScanned())
+        {
+            qDebug() << __PRETTY_FUNCTION__ << " : source Directory was not scanned yet" ;
+
+            QDir::Filters filter = QDir::Dirs|QDir::Files | QDir::NoDotAndDotDot;
+            Track  track;
+            QString tmppath;
+            QFileInfo file;
+            QDirIterator dirIter (sourceDirPath,audioFormatFilter, filter,QDirIterator::Subdirectories);
+            //QTime t;
+            std::lock_guard<std::mutex>dbLock(databaseMutex);
+            //int i = 0;
+            //int loggerTime = -1;
+            //t.start();
+
+
+            while(dirIter.hasNext())
+            {
+                tmppath = dirIter.next();
+                track = Tagreader::tagreader(tmppath);
+                track.playCount = 0;
+                track.liked = 0;
+                file = QFileInfo(track.path);
+                track.modifiedDate = file.lastModified().toTime_t();
+                track.addedDate = QDateTime::currentDateTime().toTime_t();
+                data_access->addTrack(track);
+                //i++;
+            }
+            //loggerTime = t.elapsed();
+            data_access->query("UPDATE Settings SET isScanned = 1 WHERE ID = 1;");
+
+        }
+        else
+        {
+            qDebug() << __PRETTY_FUNCTION__ << " : source Directory already scanned" ;
+            qDebug() << __PRETTY_FUNCTION__ << " : running update Thread now." ;
+            launchUpdateThread();
+        }
+        query.exec("END TRANSACTION;");
+        query.finish();
+        data_access->commit();
+    }
+    else
+    {
+        qDebug() << __PRETTY_FUNCTION__ << " : no DataAccess Object";
+    }
+}
+
+
+void MediaScanner::scanSourceDirectory2()
 {
     /******************************************
          * If the source directory was not yet scanned,
@@ -94,7 +157,6 @@ void MediaScanner::scanSourceDirectory()
         qDebug() << __PRETTY_FUNCTION__ << " : no DataAccess Object";
     }
 }
-
 void MediaScanner::setSourceDirectory(const QString &dirpath)
 {
     sourceDirPath = dirpath;
@@ -108,6 +170,59 @@ void MediaScanner::setSourceDirectory(const QString &dirpath)
 }
 
 int MediaScanner::getLastAddedDate()
+{
+    // bool openSuccess = false;
+    int date = -1;
+    if(data_access not_eq nullptr)
+    {
+
+        auto query = data_access->query(QString("SELECT MAX(addedDate) AS date FROM BaseTableTracks;"));
+        std::lock_guard<std::mutex>dbLock(databaseMutex);
+        if(query.isActive())
+        {
+            while(query.next())
+            {
+                date = query.value("date").toInt();
+            }
+            query.finish();
+        }
+
+    }
+    else
+    {
+        qDebug() << __PRETTY_FUNCTION__ << ": DataAccess Object not initialized";
+    }
+    return date;
+}
+
+int MediaScanner::getLastModifiedDate()
+{
+    // bool openSuccess = false;
+    int date = -1;
+    if(data_access not_eq nullptr)
+    {
+        auto query = data_access->query(QString("SELECT MAX(modifiedDate) AS date FROM BaseTableTracks;"));
+        std::lock_guard<std::mutex>dbLock(databaseMutex);
+        if(query.isActive())
+        {
+            while(query.next())
+            {
+                date = query.value("date").toInt();
+            }
+            query.finish();
+        }
+
+    }
+    else
+    {
+        qDebug() << __PRETTY_FUNCTION__ << ": DataAccess Object not initialized";
+    }
+    return date;
+}
+
+
+
+int MediaScanner::getLastAddedDate2()
 {
     // bool openSuccess = false;
     int date = -1;
@@ -134,7 +249,7 @@ int MediaScanner::getLastAddedDate()
     return date;
 }
 
-int MediaScanner::getLastModifiedDate()
+int MediaScanner::getLastModifiedDate2()
 {
     // bool openSuccess = false;
     int date = -1;
@@ -159,7 +274,6 @@ int MediaScanner::getLastModifiedDate()
     }
     return date;
 }
-
 void MediaScanner::updateData()
 {
     //bool openSuccess = false;
@@ -191,8 +305,7 @@ bool MediaScanner::isSourceDirectoryConfigured() const
     if(hasDataAccessObject())
     {
         QString str = "SELECT isConfigured FROM Settings";
-        auto query = queryScanner;
-        query.exec("SELECT isConfigured FROM Settings");
+        auto query = data_access->query(str);
         if(query.isActive())
         {
             if(query.first())
@@ -212,8 +325,8 @@ bool MediaScanner::isSourceDirectoryScanned() const
     if(hasDataAccessObject())
     {
         QString str = "SELECT isScanned FROM Settings";
-        auto query = queryScanner;
-        query.exec(str);
+        auto query = data_access->query(str);
+        //query.exec(str);
         if(query.isActive())
         {
             if(query.first())
@@ -233,6 +346,239 @@ bool MediaScanner::hasDataAccessObject() const
     return data_access != nullptr;
 }
 
+void MediaScanner::createTables()
+{
+    if (data_access->isOpen())
+        {
+
+            createCoverTable();
+            createGenreTable();
+
+            createArtistTable();
+
+            createAlbumTable();
+
+            createBaseTrackTable();
+            createPlaylistTable();
+            createPlaylistTracksTable();
+            // Directory is the Collection source: for example Music, /media/$USER/Music ...
+            //createDirectoriesTable();
+            //Subdirectory is the content of the collection
+            //createSubDirectoriesTable();
+            data_access->query("UPDATE Settings SET isConfigured = 1 WHERE ID = 1;");
+            data_access->commit();
+        }
+        else qDebug() << "DataAcess::config(): database is not opened" ;
+}
+
+void MediaScanner::createCoverTable()
+{
+    data_access->query(QString( "CREATE TABLE IF NOT EXISTS Cover"
+                             "("
+                             "coverID INTEGER NOT NULL,"
+                             "coverpath TEXT UNIQUE COLLATE NOCASE,"
+                             "PRIMARY KEY (coverID));")
+                    );
+}
+
+void MediaScanner::createGenreTable()
+{
+    data_access->query(QString("CREATE TABLE IF NOT EXISTS Genre"
+                           "("
+                           "genreID INTEGER ,"
+                           "genre TEXT UNIQUE COLLATE NOCASE,"
+                           "PRIMARY KEY(genreID)"
+                           ");"
+                           ));
+}
+
+void MediaScanner::createArtistTable()
+{
+    data_access->query(QString("CREATE TABLE IF NOT EXISTS Artist (artistID INTEGER,"
+                           "artistname TEXT UNIQUE COLLATE NOCASE,"
+                           "description TEXT,"
+                           "PRIMARY KEY(artistID));"
+                           ));
+}
+
+void MediaScanner::createAlbumTable()
+{
+    data_access->query(QString("CREATE TABLE IF NOT EXISTS Album"
+                           "("
+                           "albumID INTEGER ,"
+                           "genreID INTEGER NOT NULL,"
+                           "artistID INTEGER NOT NULL,"
+                           "coverID INTEGER ,"
+                           "albumTitle TEXT UNIQUE NOT NULL COLLATE NOCASE,"
+                           //"subDirID INTEGER REFERENCES SubDirectories(subDirectoryID),"
+                           "year INTEGER DEFAULT 0,"
+                           "tracks INTEGER DEFAULT 0,"
+                           "duration INTEGER DEFAULT 0,"
+                           "UNIQUE(albumTitle,artistID),"
+                           "FOREIGN KEY (artistID) REFERENCES Artist(artistID) ON DELETE CASCADE,"
+                           "FOREIGN KEY (genreID) REFERENCES Genre(genreID),"
+                           "FOREIGN KEY (coverID) REFERENCES Cover(coverID) ON DELETE CASCADE,"
+                           "PRIMARY KEY (albumID) );"
+                           ));
+}
+
+void MediaScanner::createBaseTrackTable()
+{
+    data_access->query(QString("CREATE TABLE IF NOT EXISTS BaseTableTracks"
+                           "(trackID INTEGER PRIMARY KEY,"
+                           "albumTitle TEXT NOT NULL COLLATE NOCASE,"
+                           "artist TEXT NOT NULL COLLATE NOCASE,"
+                           "albumArtist TEXT NOT NULL COLLATE NOCASE,"
+                           "title TEXT NOT NULL COLLATE NOCASE,"
+                           "genre TEXT NOT NULL COLLATE NOCASE,"
+                           "trackUrl  TEXT  UNIQUE NOT NULL  COLLATE NOCASE,"
+                           "cover  TEXT  NOT NULL  COLLATE NOCASE,"
+                           "trackNumber INTEGER ,"
+                           "length INTEGER NOT NULL,"
+                           "playCount INTEGER DEFAULT 0,"
+                           "favorite INTEGER DEFAULT 0,"
+                           "bitrate INTEGER,"
+                           "year INTEGER,"
+                           "addedDate INTERGER NOT NULL,"
+                           "modifiedDate INTEGER ,"
+                           "UNIQUE(albumTitle,trackUrl));"
+                           ));
+}
+
+void MediaScanner::createPlaylistTable()
+{
+    data_access->query(QString("CREATE TABLE IF NOT EXISTS Playlist"
+                           "("
+                           "playlistID INTEGER,"
+
+                           "title TEXT UNIQUE COLLATE NOCASE,"
+                           "favorite INTEGER DEFAULT 0,"
+                           "coverID INTEGER,"
+                           "FOREIGN KEY (coverID) REFERENCES Cover(coverID),"
+                           "PRIMARY KEY (playlistID) );"
+                           ));
+}
+
+void MediaScanner::createPlaylistTracksTable()
+{
+    data_access->query(QString("CREATE TABLE IF NOT EXISTS PlaylistTrack"
+                           "(plsTrackID INTEGER ,"
+                           "playlistID INTEGER ,"
+                           "trackID INTEGER,"
+                           "FOREIGN KEY(playlistID) REFERENCES Playlist(playlistID) ON DELETE CASCADE,"
+                           "FOREIGN KEY (trackID) REFERENCES BaseTableTracks(trackID)ON DELETE CASCADE,"
+                           "PRIMARY KEY (plsTrackID) );"
+                           ));
+}
+
+void MediaScanner::createDirectoriesTable()
+{
+    data_access->query(QString("CREATE TABLE IF NOT EXISTS Directories"
+                           "(directoryID INTEGER,"
+                           "path TEXT NOT NULL UNIQUE COLLATE NOCASE,"
+                           "lastScanedDate INTEGER,"
+                       "PRIMARY KEY (directoryID));"));
+}
+
+void MediaScanner::createSubDirectoriesTable()
+{
+    data_access->query(QString("CREATE TABLE IF NOT EXISTS SubDirectories"
+                          "(subDirectoryID INTEGER,"
+                          /*"parentID INTEGER REFERENCES Directories(directoryID)," */
+                          "path TEXT NOT NULL UNIQUE COLLATE NOCASE,"
+                          "addedDate INTEGER,"
+                          "modifiedDate INTEGER,"
+                          "PRIMARY KEY (subDirectoryID));"));
+}
+
+// TODO use SettingManager to get the
+void MediaScanner::setConfig()
+{
+    QDir home = QDir::home();
+        if (!home.exists(home.absolutePath() + "/.Player"))
+        {
+            home.mkdir(home.absolutePath() + "/.Player");
+        }
+        std::lock_guard<std::mutex>dbLock(databaseMutex);
+        if (data_access->isOpen())
+        {
+
+            //auto confQuery = QSqlQuery(query);
+
+            data_access->query("PRAGMA foreign_keys = ON ;");
+            data_access->query("PRAGMA SYNCHRONOUS = OFF");
+            data_access->query("PRAGMA journal_mode = MEMORY");
+            data_access->query(QString( "CREATE TABLE IF NOT EXISTS Settings"
+                                    "("
+                                    "ID INTEGER NOT NULL,"
+                                    "sourcedirectory TEXT UNIQUE COLLATE NOCASE,"
+                                    "applicationName TEXT UNIQUE COLLATE NOCASE,"
+                                    "isConfigured INTEGER DEFAULT 0,"
+                                    "isScanned INTEGER  DEFAULT 0,"
+                                    "PRIMARY KEY (ID));")
+                           );
+           data_access->query(
+                        QString("INSERT OR IGNORE INTO Settings(sourcedirectory,applicationName) VALUES('%1','%2');")
+                        .arg(sourceDirPath,"Player"));
+
+        }
+        else
+        {
+            qDebug() << "DataAccess::setConfig(): Database couldn't be opened" ;
+            //TODO need to read the last error from the database through data_access
+        }
+}
+
+void MediaScanner::databaseConfig2()
+{
+    auto query = data_access->query("SELECT * FROM Settings ;");
+            if(query.isActive())
+            {
+                if(query.first())
+                {
+                    //isScanned = query.value("isScanned").toInt();
+                   // isConfigured = query.value("isConfigured").toInt();
+                }
+                if(!isDatabaseConfigured())
+                {
+                    try
+                    {
+                        createTables();
+                    }
+                    catch(std::exception &e)
+                    {
+
+                    }
+
+                }
+            }
+        else
+        {
+            qDebug() << "DataAccess::databaseConfig(): Query not executed" ;
+            qDebug() << "DataAccess::databaseConfig() Error: " << query.lastError() ;
+        }
+
+}
+
+void MediaScanner::databaseConfig()
+{
+
+    if(!isSourceDirectoryConfigured())
+    {
+        createTables();
+    }
+}
+
+void MediaScanner::setup()
+{
+
+}
+
+bool MediaScanner::isDatabaseConfigured() const
+{
+
+}
+
 void MediaScanner::launchScanThread()
 {
     directoryScannThread = std::thread(&MediaScanner::scanSourceDirectory,this);
@@ -249,13 +595,10 @@ void MediaScanner::launchUpdateThread()
 
 void MediaScanner::removeDeletedFile()
 {
-    auto query = data_access->query(QString());
-    auto deletQuery = data_access->query(QString());
-    if(query.exec(QString("SELECT trackUrl,albumTitle,cover FROM BaseTableTracks ORDER BY albumTitle;")))
-    {
-        if(query.isActive())
+    auto query = data_access->query(QString("SELECT trackUrl,albumTitle,cover FROM BaseTableTracks ORDER BY albumTitle;"));
+    //auto deletQuery = data_access->query(QString());
+if(query.isActive())
         {
-            // search for removed file.
 
             QString path ;
             while(query.next())
@@ -264,24 +607,24 @@ void MediaScanner::removeDeletedFile()
                 if(!QFile::exists(path))
                 {
 
-                    deletQuery.exec(QString("DELETE FROM BaseTableTracks WHERE trackUrl ='%1';").arg(path));
+                    data_access->query(QString("DELETE FROM BaseTableTracks WHERE trackUrl ='%1';").arg(path));
+                    qDebug() << "removing file " + path;
                 }
                 else
                 {
                     fileInDatabase.push_back(path);
                 }
             }
-            std::sort(fileInDatabase.begin(), fileInDatabase.end());
-            //qDebug() << __PRETTY_FUNCTION__ << " : " << fileInDatabase.size() << " Files in database";
+            if(!fileInDatabase.empty())
+                std::sort(fileInDatabase.begin(), fileInDatabase.end());
+           qDebug() << __PRETTY_FUNCTION__ << " : " << fileInDatabase.size() << " Files in database";
         }
-    }
 
     else
     {
         qDebug() << __PRETTY_FUNCTION__ << "query error : " << query.lastError();
     }
     query.clear();
-    deletQuery.clear();
 }
 
 std::vector<QString> MediaScanner::getFileInSourceDir()
@@ -304,8 +647,6 @@ std::vector<QString> MediaScanner::getUrlFromDatabase()
 {
     std::vector<QString> files;
     auto query = data_access->query(QString("SELECT trackUrl,albumTitle,cover FROM BaseTableTracks ORDER BY albumTitle;"));
-    if(query.isActive())
-    {
         // search for removed file.
         if(query.isActive())
         {
@@ -318,10 +659,10 @@ std::vector<QString> MediaScanner::getUrlFromDatabase()
                     files.push_back(path);
                 }
             }
+            std::sort(files.begin(), files.end());
         }
-        std::sort(files.begin(), files.end());
+
         //qDebug() << __PRETTY_FUNCTION__ << " : " << files.size() << " Files in database";
-    }
     else
     {
         qDebug() << __PRETTY_FUNCTION__ << "query error : " << query.lastError();

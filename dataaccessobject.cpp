@@ -132,14 +132,14 @@ void DataAccessObject::addTrack(const Track &track)
         _query.bindValue(14,QString::number(track.modifiedDate));
         if(!_query.exec())
         {
-            qDebug() << __FUNCTION__
+            qDebug() << __PRETTY_FUNCTION__
                      << " line "
                      << __LINE__
                      <<" error :" << _query.lastError();
         }
         else
         {
-            qDebug() << __FUNCTION__
+            qDebug() << __PRETTY_FUNCTION__
                      << " line "
                      << __LINE__
                      <<" title added :" <<track.title;

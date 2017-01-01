@@ -3,7 +3,16 @@
 
 #include <QString>
 
-
+enum PlaybackMode
+{
+    CurrentItemOnce = 0,
+    CurrentItemInLoop,
+    Sequential,
+    Loop,
+    Random,
+    Preview,
+    RADIO
+};
 
 struct Track
 {

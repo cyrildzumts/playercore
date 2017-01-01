@@ -37,14 +37,50 @@ public:
     // IMediaScanner interface
 public:
     virtual void scanSourceDirectory() override;
+    void scanSourceDirectory2();
     virtual void setSourceDirectory(const QString &dirpath) override;
     virtual int getLastAddedDate() override;
     virtual int getLastModifiedDate() override;
+    int getLastAddedDate2();
+    int getLastModifiedDate2();
     virtual void updateData() override;
     virtual void setDataAccessObject(AbstractDataAccessObject *data_access) override;
     virtual bool isSourceDirectoryConfigured() const override;
     virtual bool isSourceDirectoryScanned() const override;
     virtual bool hasDataAccessObject() const override;
+
+
+// Utilities functions
+private:
+    /**
+     * @brief createTables create Tables in the database
+     * When the database is not opened an Exception is thrown
+     */
+    void createTables();
+
+    void createCoverTable();
+
+    void createGenreTable();
+
+    void createArtistTable();
+
+    void createAlbumTable();
+
+    void createBaseTrackTable();
+
+    void createPlaylistTable();
+
+    void createPlaylistTracksTable();
+
+    void createDirectoriesTable();
+
+    void createSubDirectoriesTable();
+
+    void setConfig();
+    void databaseConfig();
+    void setup();
+    bool isDatabaseConfigured() const;
+    void databaseConfig2();
 
 private:
     void launchScanThread();
