@@ -105,7 +105,7 @@ public:
 class PlayerFacade : public Facade
 {
 public:
-    PlayerFacade();
+    PlayerFacade(const QString &conf = QString());
     virtual ~PlayerFacade();
     void init();
 

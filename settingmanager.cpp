@@ -19,17 +19,22 @@ const char* InexistentConfigException::what() const noexcept
         return message.c_str();
     }
 
-SettingManager::SettingManager()
+SettingManager::SettingManager() : SettingManager(QString())
 {
-    qDebug() << __FUNCTION__ << "Building Settings Object ";
-    conf = QDir::homePath() +  QString("/.Player/config/player.conf");
-    init();
+
 }
 
 SettingManager::SettingManager(const QString &confPath)
 {
     qDebug() << __FUNCTION__ << "Building Settings Object ";
-    conf = confPath;
+    if(!confPath.isEmpty())
+    {
+        conf = confPath;
+    }
+    else
+    {
+        conf = QDir::homePath() +  QString("/.Player/config/player.conf");
+    }
     init();
 }
 

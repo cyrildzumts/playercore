@@ -2,11 +2,11 @@
 
 // PlayerFacade definition
 
-PlayerFacade::PlayerFacade()
+PlayerFacade::PlayerFacade(const QString &conf)
 {
     try
     {
-        settings = new SettingManager();
+        settings = new SettingManager(conf);
     }
     catch(InexistentConfigException &e)
     {
