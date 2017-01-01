@@ -122,6 +122,24 @@ public:
 protected:
     virtual void init() override;
 };
+
+class TracklistModel : public AbstractModel
+{
+    Q_OBJECT
+public:
+    TracklistModel(AbstractDataAccessObject *data_access = nullptr);
+
+    ~TracklistModel();
+    // AbstractModel interface
+protected:
+    virtual void init() override;
+
+public Q_SLOTS:
+    virtual void refresh() override;
+    void onQueryChanged();
+
+};
+
 #endif // ABSTRACTMODEL_H
 
 

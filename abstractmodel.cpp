@@ -84,15 +84,16 @@ void AbstractModel::setQuery(QSqlQuery &query)
 {
     //resetInternalData();
     _query = query;
-    Q_EMIT queryChanged();
+    //Q_EMIT queryChanged();
 }
 
 void AbstractModel::setQuery(const QString &str)
 {
-    queryStr = str;
-
-    Q_EMIT queryChanged();
-
+    if(queryStr != str)
+    {
+        queryStr = str;
+        Q_EMIT queryChanged();
+    }
 }
 
 QSqlQuery &AbstractModel::getQuery()
@@ -240,4 +241,43 @@ void ArtistModel::init()
 {
     queryStr = QString("SELECT albumArtist as artist,cover FROM BaseTableTracks GROUP BY albumArtist ORDER BY albumArtist;");
     _query = data_access->query(queryStr);
+}
+
+
+// TRACKLISTMODEL
+
+TracklistModel::TracklistModel(AbstractDataAccessObject *data_access)
+{
+    this->data_access = data_access;
+    _roles = AbstractModel::trackRoles();
+    connect(this,&TracklistModel::queryChanged,
+            this, &TracklistModel::refresh);
+    connect(this,&TracklistModel::queryChanged,
+            this, &TracklistModel::onQueryChanged);
+
+}
+
+TracklistModel::~TracklistModel()
+{
+    resetInternalData();
+}
+
+void TracklistModel::init()
+{
+
+}
+
+
+void TracklistModel::refresh()
+{
+    resetInternalData();
+    _query = data_access->query(queryStr);
+    Q_EMIT dataChanged();
+}
+
+void TracklistModel::onQueryChanged()
+{
+    qDebug() << __FUNCTION__ << " : Query changed to : "
+             << queryStr;
+    //_query = data_access->query(queryStr);
 }
