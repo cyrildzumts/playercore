@@ -13,6 +13,8 @@ class Facade : public QObject
 public:
     virtual ~Facade(){}
     virtual void update() = 0;
+
+    virtual void playAlbum(const QString &album) = 0;
     // Model Interface
     virtual AbstractModel* albumModel() = 0;
     virtual AbstractModel* tracklistModel() = 0;
