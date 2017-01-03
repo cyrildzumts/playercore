@@ -78,6 +78,12 @@ void PlayerFacade::update()
     mediascanner->updateData();
 }
 
+
+void PlayerFacade::playAlbum(const QString &album)
+{
+    playlist->addAlbum(album);
+}
+
 AbstractModel *PlayerFacade::albumModel()
 {
     return albums;

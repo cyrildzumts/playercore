@@ -238,6 +238,48 @@ void Playlist::addMedia(Track track)
     endInsertRows();
 }
 
+void Playlist::addAlbum(const QString &album)
+{
+
+    Track track ;
+    QSqlQuery query = data_access->query(
+                QString("SELECT * FROM BaseTableTracks where AlbumTitle='%1' ORDER BY trackNumber;").arg(album));
+    if(query.isActive())
+        {
+            while(query.next())
+            {
+                track.ID = query.value("trackID").toInt();
+                track.albumTitle = query.value("albumTitle").toString();
+                track.artist = query.value("artist").toString();
+                track.albumArtist = query.value("albumArtist").toString();
+                track.title = query.value("title").toString();
+                track.path = query.value("trackUrl").toString();
+                track.genre = query.value("genre").toString();
+                track.cover = query.value("cover").toString();
+                track.position = query.value("trackNumber").toInt();
+                track.length = query.value("length").toInt();
+                track.playCount = query.value("playCount").toInt();
+                track.liked = query.value("favorite").toInt();
+                track.bitRate = query.value("bitrate").toInt();
+                track.year = query.value("year").toInt();
+                track.addedDate = query.value("addedDate").toInt();
+                track.modifiedDate = query.value("modifiedDate").toInt();
+                addMedia(track);
+            }
+
+        }
+        else
+        {
+            qDebug() << __PRETTY_FUNCTION__ << " Query Error : "
+                     << query.lastError();
+            qDebug() << "Query Error Last command 1 : "
+                      << query.lastQuery();
+            qDebug() << "Query Error Last command 2 : "
+                     << query.executedQuery();
+
+        }
+}
+
 void Playlist::addMedia(int trackID)
 {
 

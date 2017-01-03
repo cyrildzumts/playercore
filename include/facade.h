@@ -114,6 +114,7 @@ public:
     // Facade interface
 public:
     virtual void update() override;
+    virtual void playAlbum(const QString &album) override;
 
     // Model
     virtual AbstractModel *albumModel() override;

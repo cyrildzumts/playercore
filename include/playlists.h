@@ -144,6 +144,7 @@ public Q_SLOTS:
      * @param track
      */
     virtual void addMedia(Track track);
+    virtual void addAlbum(const QString &album);
     /**
      * @brief addMedia adds tracks to the playlist
      * @param tracks
