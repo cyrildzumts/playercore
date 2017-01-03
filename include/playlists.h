@@ -137,6 +137,11 @@ public Q_SLOTS:
      * is set to default : PlaybackMode::Sequential
      */
     virtual void clear();
+    //TODO refactor this method since it clashes with setPlaylistTitle();
+    /**
+     * @brief setTitle set the playlist's title
+     * @param t
+     */
     virtual void setTitle(QString t);
     //void addMedia(QString url, int trackID);
     /**

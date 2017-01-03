@@ -276,7 +276,6 @@ void Playlist::addAlbum(const QString &album)
                       << query.lastQuery();
             qDebug() << "Query Error Last command 2 : "
                      << query.executedQuery();
-
         }
 }
 
