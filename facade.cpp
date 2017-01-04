@@ -99,6 +99,11 @@ AbstractModel *PlayerFacade::playlistModel()
     return playlists;
 }
 
+AbstractModel *PlayerFacade::currentPlaylist()
+{
+    return playlist;
+}
+
 void PlayerFacade::play()
 {
     player->play();
@@ -233,6 +238,11 @@ AbstractModel *FacadeStubs::tracklistModel()
 AbstractModel *FacadeStubs::playlistModel()
 {
     qDebug()<< __FUNCTION__ << " called." ;
+    return nullptr;
+}
+
+AbstractModel *FacadeStubs::currentPlaylist()
+{
     return nullptr;
 }
 

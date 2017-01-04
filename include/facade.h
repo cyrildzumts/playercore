@@ -19,6 +19,7 @@ public:
     virtual AbstractModel* albumModel() = 0;
     virtual AbstractModel* tracklistModel() = 0;
     virtual AbstractModel* playlistModel() = 0;
+    virtual AbstractModel* currentPlaylist() = 0;
 
     // Player Interface
     virtual void play() = 0;
@@ -99,8 +100,6 @@ public:
      */
     virtual int year()const = 0;
 
-
-
 };
 
 
@@ -120,6 +119,7 @@ public:
     virtual AbstractModel *albumModel() override;
     virtual AbstractModel *tracklistModel() override;
     virtual AbstractModel *playlistModel() override;
+    virtual AbstractModel *currentPlaylist() override;
 
     // Player
     virtual void play() override;
@@ -157,9 +157,6 @@ private:
     AbstractModel *playlists;
     IMediaScanner *mediascanner;
     ISettingManager *settings;
-
-
-
 };
 
 class FacadeStubs : public Facade
@@ -173,6 +170,8 @@ public:
     virtual AbstractModel *albumModel() override;
     virtual AbstractModel *tracklistModel() override;
     virtual AbstractModel *playlistModel() override;
+    virtual AbstractModel *currentPlaylist() override;
+
     virtual void play() override;
     virtual void stop() override;
     virtual void pause() override;

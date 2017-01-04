@@ -655,16 +655,19 @@ void Playlist::setTracklist(std::vector<Track> tracks)
 
 void Playlist::setTracklist(const std::vector<int> &ids)
 {
-    clear();
-
-    randomIndices = RandomGenerator::Instance()->getShuffleList(ids.size());
-
-    for(auto id: ids)
+    if(!ids.empty())
     {
-        addMedia(id);
-    }
+        clear();
 
-    Q_EMIT tracklistChanged();
+        randomIndices = RandomGenerator::Instance()->getShuffleList(ids.size());
+
+        for(auto id: ids)
+        {
+            addMedia(id);
+        }
+
+        Q_EMIT tracklistChanged();
+    }
 }
 
 std::vector<Track> Playlist::tracklist()const
