@@ -35,6 +35,7 @@ public:
     virtual void setPlaybackMode(int mode) = 0;
     virtual int playbackMode()const = 0;
     virtual int currentIndex()const = 0;
+    virtual void setCurrentIndex(int index) = 0;
     virtual int mediacount()const = 0;
     /**
      * @brief duration
@@ -100,6 +101,10 @@ public:
      */
     virtual int year()const = 0;
 
+    virtual QString author()const = 0;
+    virtual QString appName()const = 0;
+    virtual QString version() const = 0;
+
 };
 
 
@@ -135,6 +140,7 @@ public:
     virtual void setPlaybackMode(int mode) override;
     virtual int playbackMode() const override;
     virtual int currentIndex() const override;
+    virtual void setCurrentIndex(int index) override;
     virtual int duration() const override;
     virtual QString durationStr() const override;
     virtual void setCover(QString path) override;
@@ -146,6 +152,11 @@ public:
     virtual int mediacount() const override;
     virtual int length() const override;
     virtual QString lengthStr() const override;
+    // Facade interface
+public:
+    virtual QString author() const override;
+    virtual QString appName() const override;
+    virtual QString version() const override;
 
 
 private:
@@ -157,12 +168,12 @@ private:
     AbstractModel *playlists;
     IMediaScanner *mediascanner;
     ISettingManager *settings;
+
+
 };
 
 class FacadeStubs : public Facade
 {
-public:
-
 
     // Facade interface
 public:
@@ -197,6 +208,14 @@ public:
 public:
     virtual int length() const override;
     virtual QString lengthStr() const override;
+
+    // Facade interface
+public:
+    virtual void playAlbum(const QString &album) override;
+    virtual void setCurrentIndex(int index) override;
+    virtual QString author() const override;
+    virtual QString appName() const override;
+    virtual QString version() const override;
 };
 
 #endif // FACADE_H

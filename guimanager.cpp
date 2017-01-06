@@ -2,7 +2,7 @@
 
 GUIManager::GUIManager()
 {
-    facade = new FacadeStubs();
+    facade = new PlayerFacade(QString());
 }
 
 GUIManager::~GUIManager()
@@ -91,7 +91,7 @@ AbstractModel *GUIManager::artistAlbumsModel()
 //TODO
 Playlist *GUIManager::now_playingPlaylist()
 {
-    return facade->currentPlaylist();
+    return static_cast<Playlist*>(facade->currentPlaylist());
 }
 //TODO
 void GUIManager::onAlbumClicked(const QString &title)
@@ -102,7 +102,7 @@ void GUIManager::onAlbumClicked(const QString &title)
 //TODO
 void GUIManager::onPlayAlbumPressed(const QString &title)
 {
-
+    facade->playAlbum(title);
 }
 
 // Playlist In
@@ -110,7 +110,7 @@ void GUIManager::onPlayAlbumPressed(const QString &title)
 //TODO
 void GUIManager::setCurrentIndex(int index)
 {
-
+    facade->setCurrentIndex(index);
 }
 
 QString GUIManager::title()
@@ -131,6 +131,11 @@ QString GUIManager::artist()
 QString GUIManager::cover()
 {
     return facade->cover();
+}
+
+QString GUIManager::genre()
+{
+    return "Genre";
 }
 
 int GUIManager::duration()
@@ -198,6 +203,21 @@ void GUIManager::update()
 void GUIManager::shutdown()
 {
 
+}
+
+QString GUIManager::author() const
+{
+    return facade->author();
+}
+
+QString GUIManager::appName() const
+{
+    return facade->appName();
+}
+
+QString GUIManager::version() const
+{
+    return facade->version();
 }
 
 

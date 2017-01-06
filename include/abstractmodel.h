@@ -109,7 +109,7 @@ public Q_SLOTS:
 protected:
     virtual void init();
 private:
-    QString queryStr;
+    //QString queryStr;
 };
 
 

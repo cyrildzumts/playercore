@@ -7,12 +7,14 @@ DataAccessObject::DataAccessObject(const QString& path)
     {
         throw std::invalid_argument("DataAccessObject : path is empty.\n");
     }
+    /*
     else if(!QFile::exists(path))
     {
         throw std::invalid_argument( "DataAccessObject : "
                                      + path.toStdString()
-                                     + "doesn't exists");
+                                    + "doesn't exists");
     }
+    */
     appName = QString("Player");
     databasePath = path;
     connectionName = QString("DataAccess");
@@ -137,13 +139,16 @@ void DataAccessObject::addTrack(const Track &track)
                      << __LINE__
                      <<" error :" << _query.lastError();
         }
+
         else
         {
             qDebug() << __PRETTY_FUNCTION__
                      << " line "
                      << __LINE__
-                     <<" title added :" <<track.title;
+                     << " title added :"
+                     << track.title;
         }
+
         _query.finish();
         _query.clear();
     }

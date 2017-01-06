@@ -81,6 +81,10 @@ public Q_SLOTS:
     void update();
     // Settings Controller interface
     virtual void shutdown();
+    virtual QString author()const;
+    virtual QString appName()const;
+    virtual QString version()const;
+
 
 Q_SIGNALS:
     void currentIndexChanged(int index);

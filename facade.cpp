@@ -159,6 +159,11 @@ int PlayerFacade::currentIndex() const
     return playlist->currentIndex();
 }
 
+void PlayerFacade::setCurrentIndex(int index)
+{
+    playlist->setCurrentIndex(index);
+}
+
 int PlayerFacade::duration() const
 {
     return playlist->duration();
@@ -374,3 +379,43 @@ QString FacadeStubs::lengthStr() const
 }
 
 
+
+
+QString PlayerFacade::author() const
+{
+    return settings->authorName();
+}
+
+QString PlayerFacade::appName() const
+{
+    return settings->applicationName();
+}
+
+QString PlayerFacade::version() const
+{
+    return settings->applicationVersion();
+}
+
+
+void FacadeStubs::playAlbum(const QString &album)
+{
+}
+
+void FacadeStubs::setCurrentIndex(int index)
+{
+}
+
+QString FacadeStubs::author() const
+{
+    return "";
+}
+
+QString FacadeStubs::appName() const
+{
+    return "";
+}
+
+QString FacadeStubs::version() const
+{
+    return "";
+}
