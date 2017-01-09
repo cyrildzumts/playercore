@@ -15,6 +15,12 @@ public:
     virtual void update() = 0;
 
     virtual void playAlbum(const QString &album) = 0;
+
+    // Playlist Manager Interface
+    virtual void createPlaylist(const QString& title) = 0;
+    virtual void addToPlaylist(const QString& pls, int trackID) = 0;
+    virtual void removePlaylist(const QString& pls) = 0;
+    virtual void removeFromPlaylist(const QString& pls, int trackID) = 0;
     // Model Interface
     virtual AbstractModel* albumModel() = 0;
     virtual AbstractModel* tracklistModel() = 0;
@@ -25,11 +31,14 @@ public:
     virtual void play() = 0;
     virtual void stop() = 0;
     virtual void pause() = 0;
+    virtual void seek(int pos) = 0;
+    virtual void setMedia(const QString& path) = 0;
     virtual int currentPosition() = 0;
 
     // Playlist  Intercae
     virtual void addTrack(int ID) = 0;
-    virtual void removeTrack(int ops) = 0;
+    virtual void addAlbum(const QString& album) = 0;
+    virtual void removeTrack(int pos) = 0;
     virtual void next() = 0;
     virtual void previous() = 0;
     virtual void setPlaybackMode(int mode) = 0;
@@ -100,6 +109,7 @@ public:
      * @return Returns the current Track's year
      */
     virtual int year()const = 0;
+    virtual int bitrate() = 0;
 
     virtual QString author()const = 0;
     virtual QString appName()const = 0;
@@ -159,6 +169,19 @@ public:
     virtual QString version() const override;
 
 
+    // Facade interface
+public:
+    virtual void createPlaylist(const QString &title) override;
+    virtual void addToPlaylist(const QString &pls, int trackID) override;
+    virtual void removePlaylist(const QString &pls) override;
+    virtual void removeFromPlaylist(const QString &pls, int trackID) override;
+    virtual void seek(int pos) override;
+    virtual void setMedia(const QString &path) override;
+    virtual void addAlbum(const QString &album) override;
+    virtual int bitrate() override;
+
+
+
 private:
     AbstractDataAccessObject * data_access_object;
     Playlist2 *playlist;
@@ -168,8 +191,6 @@ private:
     AbstractModel *playlists;
     IMediaScanner *mediascanner;
     ISettingManager *settings;
-
-
 };
 
 class FacadeStubs : public Facade

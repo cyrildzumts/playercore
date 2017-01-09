@@ -140,6 +140,7 @@ void DataAccessObject::addTrack(const Track &track)
                      <<" error :" << _query.lastError();
         }
 
+        /*
         else
         {
             qDebug() << __PRETTY_FUNCTION__
@@ -148,7 +149,7 @@ void DataAccessObject::addTrack(const Track &track)
                      << " title added :"
                      << track.title;
         }
-
+        */
         _query.finish();
         _query.clear();
     }

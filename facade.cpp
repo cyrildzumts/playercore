@@ -419,3 +419,39 @@ QString FacadeStubs::version() const
 {
     return "";
 }
+
+
+void PlayerFacade::createPlaylist(const QString &title)
+{
+}
+
+void PlayerFacade::addToPlaylist(const QString &pls, int trackID)
+{
+}
+
+void PlayerFacade::removePlaylist(const QString &pls)
+{
+}
+
+void PlayerFacade::removeFromPlaylist(const QString &pls, int trackID)
+{
+}
+
+void PlayerFacade::seek(int pos)
+{
+    player->setPosition(pos);
+}
+
+void PlayerFacade::setMedia(const QString &path)
+{
+    player->setMedia(path);
+}
+
+void PlayerFacade::addAlbum(const QString &album)
+{
+    playlist->addAlbum(album);
+}
+
+int PlayerFacade::bitrate()
+{
+}

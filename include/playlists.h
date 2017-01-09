@@ -102,6 +102,10 @@ public Q_SLOTS:
      */
     virtual int year()const;
 
+    virtual int bitrate()const ;
+    virtual int favorite() const;
+    virtual int addToFavorite(int trackID);
+
     /**
      * @brief tracklist
      * @return return the current tracklist.

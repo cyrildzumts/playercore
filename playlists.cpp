@@ -170,6 +170,27 @@ int Playlist::year()const
     return 0;
 }
 
+int Playlist::bitrate() const
+{
+    if (!isEmpty() )
+        return _tracks.at(_currentIndex).bitRate;
+    return 0;
+}
+
+int Playlist::favorite() const
+{
+    if (!isEmpty() )
+        return _tracks.at(_currentIndex).liked;
+    return 0;
+}
+
+int Playlist::addToFavorite(int trackID)
+{
+    auto query = data_access->query(QString("UPDATE BaseTableTracks SET favorite = 1 WHERE trackID = %1").arg(QString::number(trackID)));
+
+    return query.lastError().isValid() ? 1 : 0 ;
+}
+
 QString Playlist::title()const
 {
     QString str = "";
