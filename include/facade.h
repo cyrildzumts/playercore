@@ -5,6 +5,7 @@
 #include "player.h"
 #include "mediascanner.h"
 #include "settingmanager.h"
+#include "playlistmanager.h"
 
 
 class Facade : public QObject
@@ -59,6 +60,7 @@ public:
      * of the total tracks. Returns an empty string if the
      * playlist is empty
      */
+    // TODO move this to GUIManager
     virtual QString durationStr() const = 0;
 
 
@@ -183,7 +185,8 @@ public:
 
 
 private:
-    AbstractDataAccessObject * data_access_object;
+    AbstractDataAccessObject *data_access_object;
+    IPlaylistManager *playlistmanager;
     Playlist2 *playlist;
     Player *player;
     AbstractModel *albums;
@@ -209,7 +212,7 @@ public:
     virtual void pause() override;
     virtual int currentPosition() override;
     virtual void addTrack(int ID) override;
-    virtual void removeTrack(int ops) override;
+    virtual void removeTrack(int pos) override;
     virtual void next() override;
     virtual void previous() override;
     virtual void setPlaybackMode(int mode) override;

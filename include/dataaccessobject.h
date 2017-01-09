@@ -153,4 +153,14 @@ private:
 
 
 
+class IDatabaseManager
+{
+    virtual ~IDatabaseManager(){}
+
+
+private:
+    AbstractDataAccessObject* data_access;
+
+};
+
 #endif // DATAACCESSOBJECT_H

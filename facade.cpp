@@ -24,6 +24,7 @@ PlayerFacade::PlayerFacade(const QString &conf)
     player = new Player();
     albums = new AlbumModel(data_access_object);
     tracklists = new TracklistModel(data_access_object);
+    playlistmanager = new Playlistmanager(data_access_object);
     playlists = nullptr;
     init();
 }
@@ -44,6 +45,7 @@ PlayerFacade::~PlayerFacade()
     settings->setPlayerPosition(position);
     settings->setPlayerTrackIndex(index);
     settings->setPlaylistContent(ids);
+    delete playlistmanager;
     delete playlist;
     delete player;
     delete mediascanner;
@@ -169,6 +171,7 @@ int PlayerFacade::duration() const
     return playlist->duration();
 }
 
+// TODO move this to GUIManager
 QString PlayerFacade::durationStr() const
 {
     return playlist->durationStr();
@@ -214,9 +217,52 @@ int PlayerFacade::length() const
     return player->duration();
 }
 
+// TODO move this to GUIManager
 QString PlayerFacade::lengthStr() const
 {
     return player->durationString();
+}
+
+
+
+void PlayerFacade::createPlaylist(const QString &title)
+{
+    playlistmanager->createPlaylist(title);
+}
+
+void PlayerFacade::addToPlaylist(const QString &pls, int trackID)
+{
+    playlistmanager->addToPlaylist(pls, trackID);
+}
+
+void PlayerFacade::removePlaylist(const QString &pls)
+{
+    playlistmanager->removePlaylist(pls);
+}
+
+void PlayerFacade::removeFromPlaylist(const QString &pls, int trackID)
+{
+    playlistmanager->removeFromPlaylist(pls, trackID);
+}
+
+void PlayerFacade::seek(int pos)
+{
+    player->setPosition(pos);
+}
+
+void PlayerFacade::setMedia(const QString &path)
+{
+    player->setMedia(path);
+}
+
+void PlayerFacade::addAlbum(const QString &album)
+{
+    playlist->addAlbum(album);
+}
+
+int PlayerFacade::bitrate()
+{
+    playlist->bitrate();
 }
 
 
@@ -278,10 +324,10 @@ void FacadeStubs::addTrack(int ID)
             << ID;
 }
 
-void FacadeStubs::removeTrack(int ops)
+void FacadeStubs::removeTrack(int pos)
 {
     qDebug()<< __FUNCTION__ << " called with param : "
-            << ops;
+            << pos;
 }
 
 void FacadeStubs::next()
@@ -420,38 +466,3 @@ QString FacadeStubs::version() const
     return "";
 }
 
-
-void PlayerFacade::createPlaylist(const QString &title)
-{
-}
-
-void PlayerFacade::addToPlaylist(const QString &pls, int trackID)
-{
-}
-
-void PlayerFacade::removePlaylist(const QString &pls)
-{
-}
-
-void PlayerFacade::removeFromPlaylist(const QString &pls, int trackID)
-{
-}
-
-void PlayerFacade::seek(int pos)
-{
-    player->setPosition(pos);
-}
-
-void PlayerFacade::setMedia(const QString &path)
-{
-    player->setMedia(path);
-}
-
-void PlayerFacade::addAlbum(const QString &album)
-{
-    playlist->addAlbum(album);
-}
-
-int PlayerFacade::bitrate()
-{
-}
