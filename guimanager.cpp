@@ -64,9 +64,16 @@ bool GUIManager::isPaused()
 // Model Object Factories:
 
 
-AbstractModel *GUIManager::albumModel()
+AlbumModel *GUIManager::albumModel()
 {
+    //AbstractModel *m ;
     return facade->albumModel();
+}
+
+GenreModel *GUIManager::genreModel()
+{
+    //AbstractModel *m ;
+    return facade->genreModel();
 }
 
 //TODO

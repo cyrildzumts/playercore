@@ -4,16 +4,12 @@
 /* TODO needs refcatoring : implement a state machine
  * to synchronize the player and the playlist and DBus
  */
+
+// TODO : Remove connexion through signal for notification and dbus
+// PlayerFacade should be at least the one to handle this.
 Player::Player(QMediaPlayer *parent):QMediaPlayer(parent)
 {
        HOUR = 3600000; // Hour in Milliseconds
-      connect(this,&Player::metaDataAvailableChanged,this, &Player::notify);
-      connect(&Busmanager,SIGNAL(nextClicked()),this,SIGNAL(dbusNextClicked()));
-      connect(&Busmanager,SIGNAL(previousClicked()),this,SIGNAL(dbusPreviousClicked()));
-      connect(&Busmanager,SIGNAL(playClicked()),this,SIGNAL(dbusPlayClicked()));
-      connect(this, &Player::mediaStatusChanged, this, &Player::updateCurrentMedia);
-      connect(playlist, &Playlist2::currentIndexChanged,this, &Player::fetchFromPlaylist);
-      connect(playlist, &Playlist2::nomedia, this, &Player::stop);
 
 }
 
@@ -27,22 +23,6 @@ void Player::updateCurrentMedia(QMediaPlayer::MediaStatus status)
     }
 }
 
-void Player::notify(bool isReady)
-{
-        if( isReady)
-        {
-            QString body,summary, icon;
-            summary = metaData(QString("Title")).toString();
-            body = QString("From ") + metaData(QString("AlbumTitle")).toString()  + " , " + QString("By ")
-                    +  metaData(QString("AlbumArtist")).toString();
-            icon = _cover ;
-            Busmanager.setNotification(summary,body,icon);
-
-            qDebug() << " Notify():: " << summary + " - " + body + " - " + icon;
-        }
-
-
-}
 
 void Player::fetchFromPlaylist()
 {
@@ -63,7 +43,7 @@ void Player::setMedia(QString path)
 void Player::setCover(QString path)
 {
   _cover = path;
-  Q_EMIT coverChanged();
+  //Q_EMIT coverChanged();
 }
 
 QString Player::cover()const
@@ -103,5 +83,12 @@ QString Player::durationString()const
 
 void Player::setPlaylist(Playlist2 *_playlist)
 {
+
     this->playlist = _playlist;
+    if(_playlist != nullptr)
+    {
+        connect(this, &Player::mediaStatusChanged, this, &Player::updateCurrentMedia);
+        connect(playlist, &Playlist2::currentIndexChanged,this, &Player::fetchFromPlaylist);
+        connect(playlist, &Playlist2::nomedia, this, &Player::stop);
+    }
 }

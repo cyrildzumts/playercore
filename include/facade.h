@@ -3,6 +3,8 @@
 
 #include "abstractmodel.h"
 #include "player.h"
+#include "dbusmanager.h"
+#include "playlistmanager.h"
 #include "mediascanner.h"
 #include "settingmanager.h"
 
@@ -14,7 +16,7 @@ public:
     virtual ~Facade(){}
     virtual void update() = 0;
 
-    virtual void playAlbum(const QString &album) = 0;
+    virtual void playAlbum(const QString &album, int index = 0) = 0;
 
     // Playlist Manager Interface
     virtual void createPlaylist(const QString& title) = 0;
@@ -22,7 +24,8 @@ public:
     virtual void removePlaylist(const QString& pls) = 0;
     virtual void removeFromPlaylist(const QString& pls, int trackID) = 0;
     // Model Interface
-    virtual AbstractModel* albumModel() = 0;
+    virtual AlbumModel* albumModel() = 0;
+    virtual GenreModel* genreModel() = 0;
     virtual AbstractModel* tracklistModel() = 0;
     virtual AbstractModel* playlistModel() = 0;
     virtual AbstractModel* currentPlaylist() = 0;
@@ -128,13 +131,14 @@ public:
     // Facade interface
 public:
     virtual void update() override;
-    virtual void playAlbum(const QString &album) override;
+    virtual void playAlbum(const QString &album, int index = 0) override;
 
     // Model
-    virtual AbstractModel *albumModel() override;
+    virtual AlbumModel *albumModel() override;
     virtual AbstractModel *tracklistModel() override;
     virtual AbstractModel *playlistModel() override;
     virtual AbstractModel *currentPlaylist() override;
+    virtual GenreModel *genreModel() override;
 
     // Player
     virtual void play() override;
@@ -182,15 +186,23 @@ public:
 
 
 
+    //  Utilies :
+    void sendNotify(const QString &summary, const QString &body, const QString &icon );
+
 private:
     AbstractDataAccessObject * data_access_object;
     Playlist2 *playlist;
     Player *player;
-    AbstractModel *albums;
+    AlbumModel *albums;
+    GenreModel *genres;
     AbstractModel *tracklists;
     AbstractModel *playlists;
     IMediaScanner *mediascanner;
     ISettingManager *settings;
+    IPlaylistManager *playlistManager;
+    DBusManager *Busmanager;
+
+
 };
 
 class FacadeStubs : public Facade
@@ -199,7 +211,7 @@ class FacadeStubs : public Facade
     // Facade interface
 public:
     virtual void update() override;
-    virtual AbstractModel *albumModel() override;
+    virtual AlbumModel *albumModel() override;
     virtual AbstractModel *tracklistModel() override;
     virtual AbstractModel *playlistModel() override;
     virtual AbstractModel *currentPlaylist() override;
@@ -232,7 +244,7 @@ public:
 
     // Facade interface
 public:
-    virtual void playAlbum(const QString &album) override;
+    virtual void playAlbum(const QString &album, int index) override;
     virtual void setCurrentIndex(int index) override;
     virtual QString author() const override;
     virtual QString appName() const override;

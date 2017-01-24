@@ -19,10 +19,10 @@ public Q_SLOTS:
     //QString GetServerInformation(QString &return_vendor, QString &return_version, QString &return_spec_version);
     uint Notify(const QString &app_name, uint id, const QString &icon, const QString &summary, const QString &body, const QStringList &actions, const QVariantMap &hints, int timeout);
 
-   void setNotification(QString &arg_summary
+   void setNotification(const QString &arg_summary
                         ,
-                        QString &arg_body,
-                        QString &arg_icon);
+                        const QString &arg_body,
+                        const QString &arg_icon);
 
 
    int sendNotify();

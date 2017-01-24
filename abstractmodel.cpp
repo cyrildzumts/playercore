@@ -138,6 +138,13 @@ QHash<int, QByteArray> AbstractModel::artistRoles()
     return roles;
 }
 
+QHash<int, QByteArray> AbstractModel::genreRoles()
+{
+    QHash<int, QByteArray> roles;
+    roles[GenreRole::GenreName] = "genre";
+    return roles;
+}
+
 QHash<int, QByteArray> AbstractModel::trackRoles()
 {
     QHash<int, QByteArray> roles;
@@ -190,7 +197,7 @@ AlbumModel::AlbumModel(AbstractDataAccessObject *data_access)
 AlbumModel::~AlbumModel()
 {
     //_query.finish();
-    _query.clear();
+    query.clear();
 
 }
 void AlbumModel::init()
@@ -202,7 +209,8 @@ void AlbumModel::init()
                        "GROUP BY albumTitle "
                        "ORDER BY albumTitle;");
 
-    _query = data_access->query(queryStr);
+    query = data_access->query(queryStr);
+    setQuery(this->query);
     _roles = AbstractModel::albumRoles();
 
 }
@@ -280,4 +288,23 @@ void TracklistModel::onQueryChanged()
     qDebug() << __FUNCTION__ << " : Query changed to : "
              << queryStr;
     //_query = data_access->query(queryStr);
+}
+
+GenreModel::GenreModel(AbstractDataAccessObject *data_access)
+{
+    this->data_access = data_access;
+    init();
+}
+
+GenreModel::~GenreModel()
+{
+    _query.clear();
+}
+
+void GenreModel::init()
+{
+    queryStr = QString("SELECT genre FROM BaseTableTracks GROUP BY genre ORDER BY genre;");
+
+    _query = data_access->query(queryStr);
+    _roles = AbstractModel::genreRoles();
 }

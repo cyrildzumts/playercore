@@ -50,6 +50,12 @@ enum ArtistRole
     Description
 
 };
+enum GenreRole
+{
+
+    GenreID = UserRole + 1,
+    GenreName
+};
 
 class AbstractModel : public QAbstractListModel
 {
@@ -72,10 +78,12 @@ public:
     static QHash<int, QByteArray> albumRoles();
     static QHash<int, QByteArray> artistRoles();
     static QHash<int, QByteArray> trackRoles();
-    static AbstractModel* albumModel();
-    static AbstractModel* traclistModel();
-    static AbstractModel* artistsModel();
-    static AbstractModel* playlistModel();
+    static QHash<int, QByteArray> genreRoles();
+//    static AbstractModel* albumModel();
+//    static AbstractModel* genreModel();
+//    static AbstractModel* traclistModel();
+//    static AbstractModel* artistsModel();
+//    static AbstractModel* playlistModel();
 
 
 protected:
@@ -101,7 +109,7 @@ protected:
 
 class AlbumModel : public AbstractModel
 {
-
+Q_OBJECT
 public:
     AlbumModel(AbstractDataAccessObject  *data_access = nullptr);
     ~AlbumModel();
@@ -110,6 +118,7 @@ protected:
     virtual void init();
 private:
     //QString queryStr;
+    QSqlQuery query;
 };
 
 
@@ -138,6 +147,18 @@ public Q_SLOTS:
     virtual void refresh() override;
     void onQueryChanged();
 
+};
+
+class GenreModel : public AbstractModel
+{
+Q_OBJECT
+public:
+    GenreModel(AbstractDataAccessObject  *data_access = nullptr);
+    ~GenreModel();
+public Q_SLOTS:
+protected:
+    virtual void init();
+    QSqlQuery _query;
 };
 
 #endif // ABSTRACTMODEL_H

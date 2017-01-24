@@ -47,7 +47,8 @@ public Q_SLOTS:
     virtual bool isPaused();
 
     // Model Object Factories:
-    AbstractModel *albumModel();
+    AlbumModel *albumModel();
+    GenreModel *genreModel();
     AbstractModel *albumContents();
     AbstractModel *artistsModel();
     AbstractModel *artistAlbumsModel();

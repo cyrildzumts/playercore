@@ -61,7 +61,7 @@ QString DBusManager::getConnectionName()
     return  bus.name();
 }
 
-void DBusManager::setNotification(QString &summary, QString &body, QString &icon)
+void DBusManager::setNotification(const QString &summary, const QString &body, const QString &icon)
 {
     notify_body = body;
     notify_icon = icon;
@@ -75,7 +75,7 @@ void DBusManager::notify()
     notification->sendNotify();
 }
 
-void DBusManager::nofity(QString &summary, QString &body, QString &icon)
+void DBusManager::nofity(const QString &summary, const QString &body, const QString &icon)
 {
     notification->setNotification(summary,body,icon);
     notification->sendNotify();

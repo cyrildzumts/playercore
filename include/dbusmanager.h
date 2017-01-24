@@ -18,8 +18,8 @@ public:
 
 public Q_SLOTS:
     QString getConnectionName();
-    void setNotification(QString &summary, QString &body, QString &icon);
-    void nofity(QString &summary, QString &body, QString &icon);
+    void setNotification(const QString &summary, const QString &body,const QString &icon);
+    void nofity(const QString &summary, const QString &body, const QString &icon);
     void notify();
     //void connectToBus();
     QString service()

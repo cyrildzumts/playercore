@@ -20,6 +20,8 @@ DataAccessObject::DataAccessObject(const QString& path)
     connectionName = QString("DataAccess");
     database = QSqlDatabase::addDatabase("QSQLITE",connectionName);
     database.setDatabaseName(databasePath);
+
+
     addedDate = 0;
     modifiedDate = 0;
     if(!database.open())
@@ -33,18 +35,48 @@ DataAccessObject::DataAccessObject(const QString& path)
         exit(-1);
 
     }
+
     _query = QSqlQuery(database);
-    _query.exec("PRAGMA foreign_keys = ON ;");
-    _query.exec("PRAGMA SYNCHRONOUS = OFF;");
-    _query.exec("PRAGMA journal_mode = MEMORY;");
+    //add_query = QSqlQuery(database);
+
+    if(!_query.exec("PRAGMA foreign_keys = ON ;"))
+    {
+        qDebug() << __PRETTY_FUNCTION__ << " - "  << __LINE__ <<
+                    "Foreign Key error : " << _query.lastError().text() ;
+    }
+    if(!_query.exec("PRAGMA SYNCHRONOUS = OFF;"))
+    {
+         qDebug() << __PRETTY_FUNCTION__ << " - "  << __LINE__ <<
+                     "Synchronous error : " << _query.lastError().text() ;
+    }
+    if(!_query.exec("PRAGMA journal_mode = MEMORY;"))
+    {
+         qDebug() << __PRETTY_FUNCTION__ << " - "  << __LINE__ <<
+                     "Journal mode error : " << _query.lastError().text() ;
+    }
+    auto add_db = QSqlDatabase::cloneDatabase(database, "ADD");
+    if(!add_db.open())
+    {
+        std::cout << __FUNCTION__
+                  << " Could not be opened. "
+                  << add_db.lastError().text().toStdString()
+                  << std::endl
+                  << "Exiting ..." << std::endl;
+        QSqlDatabase::removeDatabase("ADD");
+        exit(-1);
+
+    }
+    add_query = QSqlQuery(add_db);
 }
 
 
 DataAccessObject::~DataAccessObject()
 {
     _query.finish();
+    add_query.clear();
     database.close();
     QSqlDatabase::removeDatabase(connectionName);
+    QSqlDatabase::removeDatabase("ADD");
 }
 
 bool DataAccessObject::isOpen()const
@@ -79,79 +111,76 @@ QSqlQuery DataAccessObject::queryTrack(const QString &title)
 
 void DataAccessObject::addTrack(const QString &path)
 {
-    _query.prepare(
+    add_query.prepare(
                 "INSERT INTO BaseTableTracks (albumTitle,artist, albumArtist,title, genre,trackUrl,cover,trackNumber,length,playCount, favorite, bitrate, year, addedDate, modifiedDate) "
                 "VALUES (?, ?, ?,?, ?, ?,?, ?, ?,?, ?, ?,?,?,?)");
     Track track = Tagreader::tagreader(path);
-    _query.bindValue(0, track.albumTitle);
-    _query.bindValue(1, track.artist);
-    _query.bindValue(2, track.albumArtist);
-    _query.bindValue(3, track.title);
-    _query.bindValue(4, track.genre);
-    _query.bindValue(5, track.path);
-    _query.bindValue(6, track.cover);
-    _query.bindValue(7, QString::number(track.position));
-    _query.bindValue(8, QString::number(track.length));
-    _query.bindValue(9, QString::number(track.playCount));
-    _query.bindValue(10,QString::number(track.liked));
-    _query.bindValue(11,QString::number(track.bitRate));
-    _query.bindValue(12,QString::number(track.year));
-    _query.bindValue(13,QString::number(track.addedDate));
-    _query.bindValue(14,QString::number(track.modifiedDate));
-    _query.exec();
+    add_query.bindValue(0, track.albumTitle);
+    add_query.bindValue(1, track.artist);
+    add_query.bindValue(2, track.albumArtist);
+    add_query.bindValue(3, track.title);
+    add_query.bindValue(4, track.genre);
+    add_query.bindValue(5, track.path);
+    add_query.bindValue(6, track.cover);
+    add_query.bindValue(7, QString::number(track.position));
+    add_query.bindValue(8, QString::number(track.length));
+    add_query.bindValue(9, QString::number(track.playCount));
+    add_query.bindValue(10,QString::number(track.liked));
+    add_query.bindValue(11,QString::number(track.bitRate));
+    add_query.bindValue(12,QString::number(track.year));
+    add_query.bindValue(13,QString::number(track.addedDate));
+    add_query.bindValue(14,QString::number(track.modifiedDate));
+    add_query.exec();
 }
 
 void DataAccessObject::addTrack(const Track &track)
 {
 
-    if(!database.open())
+    if(database.open())
     {
+        // add_query = QSqlQuery(database);
+         if(add_query.prepare(
+                     "INSERT INTO BaseTableTracks (albumTitle,artist, albumArtist, title, genre,trackUrl,cover,trackNumber,length,playCount, favorite, bitrate, year, addedDate, modifiedDate) "
+                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"))
+         {
+             add_query.bindValue(0, track.albumTitle);
+             add_query.bindValue(1, track.artist);
+             add_query.bindValue(2, track.albumArtist);
+             add_query.bindValue(3, track.title);
+             add_query.bindValue(4, track.genre);
+             add_query.bindValue(5, track.path);
+             add_query.bindValue(6, track.cover);
+             add_query.bindValue(7, QString::number(track.position));
+             add_query.bindValue(8, QString::number(track.length));
+             add_query.bindValue(9, QString::number(track.playCount));
+             add_query.bindValue(10,QString::number(track.liked));
+             add_query.bindValue(11,QString::number(track.bitRate));
+             add_query.bindValue(12,QString::number(track.year));
+             add_query.bindValue(13,QString::number(track.addedDate));
+             add_query.bindValue(14,QString::number(track.modifiedDate));
+             if(!add_query.exec())
+             {
+                 qDebug() << __PRETTY_FUNCTION__
+                          << " line "
+                          << __LINE__
+                          <<" error :" << add_query.lastError();
+             }
+             //add_query.finish();
+         }
+
+         else
+         {
+             qDebug() << __PRETTY_FUNCTION__ << " Query Prepare Error : "
+                      << add_query.lastError().text();
+         }
+    }
+    else
+    {
+
         qDebug() << __PRETTY_FUNCTION__
                  << " line "
                  << __LINE__
                  <<"database openError : " << database.lastError();
-    }
-    else
-    {
-        _query = QSqlQuery(database);
-        _query.prepare(
-                    "INSERT INTO BaseTableTracks (albumTitle,artist, albumArtist, title, genre,trackUrl,cover,trackNumber,length,playCount, favorite, bitrate, year, addedDate, modifiedDate) "
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
-        _query.bindValue(0, track.albumTitle);
-        _query.bindValue(1, track.artist);
-        _query.bindValue(2, track.albumArtist);
-        _query.bindValue(3, track.title);
-        _query.bindValue(4, track.genre);
-        _query.bindValue(5, track.path);
-        _query.bindValue(6, QString(track.cover).replace(QLatin1Char('\''), QLatin1String("''")));
-        _query.bindValue(7, QString::number(track.position));
-        _query.bindValue(8, QString::number(track.length));
-        _query.bindValue(9, QString::number(track.playCount));
-        _query.bindValue(10,QString::number(track.liked));
-        _query.bindValue(11,QString::number(track.bitRate));
-        _query.bindValue(12,QString::number(track.year));
-        _query.bindValue(13,QString::number(track.addedDate));
-        _query.bindValue(14,QString::number(track.modifiedDate));
-        if(!_query.exec())
-        {
-            qDebug() << __PRETTY_FUNCTION__
-                     << " line "
-                     << __LINE__
-                     <<" error :" << _query.lastError();
-        }
-
-        /*
-        else
-        {
-            qDebug() << __PRETTY_FUNCTION__
-                     << " line "
-                     << __LINE__
-                     << " title added :"
-                     << track.title;
-        }
-        */
-        _query.finish();
-        _query.clear();
     }
 
 }
@@ -163,8 +192,8 @@ void DataAccessObject::removeTrack(int trackID)
         std::lock_guard<std::mutex>dbLock(databaseMutex);
         if(database.open())
         {
-            _query = QSqlQuery(database);
-            _query.exec(QString("DELETE FROM BaseTracksTable WHERE trackID = %1;").arg(QString::number(trackID)));
+            //_query = QSqlQuery(database);
+           add_query.exec(QString("DELETE FROM BaseTracksTable WHERE trackID = %1;").arg(QString::number(trackID)));
         }
         else
         {
@@ -179,11 +208,38 @@ void DataAccessObject::removeTrack(int trackID)
 
 QSqlQuery DataAccessObject::query(const QString &command)
 {
+    //qDebug() << __PRETTY_FUNCTION__ << " called ...";
     QSqlQuery result;
-    if(database.open())
+    if(!command.isEmpty())
     {
-        result = database.exec(command);
+        if(database.open())
+        {
+            result = database.exec(command);
+            //database.commit();
+            //qDebug() << __PRETTY_FUNCTION__ << " command executed  : "
+                     //<< command ;
+            if(result.lastError().isValid())
+            {
+                qDebug() << __PRETTY_FUNCTION__ << " Error : database query command Error : "
+                         << result.lastError().text();
+            }
+        }
+        else
+        {
+            qDebug() << __PRETTY_FUNCTION__ << " Error : database is not opened.";
+            if(database.isOpenError())
+            {
+                qDebug() << __PRETTY_FUNCTION__ << " Error : database isOpenError : "
+                         << database.lastError().text();
+            }
+        }
+
     }
+    else
+    {
+        qDebug() << __PRETTY_FUNCTION__ << " Error : empty query .";
+    }
+
     return result;
 }
 

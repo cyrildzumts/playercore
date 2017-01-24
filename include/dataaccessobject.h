@@ -107,6 +107,12 @@ private:
      * everytime a new query object when  I want to add a new track into the Database
      */
     QSqlQuery _query;
+
+    /**
+     * @brief add_query query object used to add / remove track in the
+     * database.
+     */
+    QSqlQuery add_query;
     /**
      * @brief This variable is used only to mesure how long it takes to scan the whole
      * music directory

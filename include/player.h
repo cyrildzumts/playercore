@@ -4,7 +4,6 @@
 //#include <QMediaPlayer>
 #include <QtMultimedia>
 #include <memory>
-#include "dbusmanager.h"
 #include "playlists.h"
 
 //struct PlayerStateBackup
@@ -22,9 +21,7 @@
 class Player : public QMediaPlayer
 {
     Q_OBJECT
-    Q_PROPERTY(QString cover READ cover WRITE setCover NOTIFY coverChanged)
-    Q_PROPERTY(QString positionString READ positionString )
-    Q_PROPERTY(QString durationString READ durationString )
+
     //Q_PROPERTY(QString media READ media WRITE setMedia NOTIFY mediaChanged)
 
     public:
@@ -32,7 +29,6 @@ class Player : public QMediaPlayer
 
         void setPlaylist(Playlist2* _playlist);
     public Q_SLOTS:
-        void notify(bool isReady);
         void setMedia(QString path);
         void setCover(QString path);
         void fetchFromPlaylist();
@@ -40,18 +36,12 @@ class Player : public QMediaPlayer
         QString positionString()const;
         QString durationString()const;
 
-Q_SIGNALS:
-        void coverChanged();
-        void dbusNextClicked();
-        void dbusPreviousClicked();
-        void dbusPlayClicked();
 
 private Q_SLOTS:
         void updateCurrentMedia(MediaStatus status);
 
     private:
         Playlist2 *playlist;
-        DBusManager Busmanager;
         QString currentPath;
         QString _cover;
         int count;

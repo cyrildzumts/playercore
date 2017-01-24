@@ -47,7 +47,7 @@ uint Notification::Notify(const QString &app_name, uint id, const QString &icon,
     return notify_id;
 }
 
-void Notification::setNotification( QString &summary, QString &body, QString &icon)
+void Notification::setNotification(const QString &summary, const QString &body, const QString &icon)
 {
     notify_body = body;
     notify_icon = icon;
