@@ -403,6 +403,7 @@ void MediaScanner::createTables()
             //Subdirectory is the content of the collection
             //createSubDirectoriesTable();
             exec("UPDATE Settings SET isConfigured = 1 WHERE ID = 1;");
+            //data_access->commit();
         }
         else qDebug() << "DataAcess::config(): database is not opened" ;
 }

@@ -121,7 +121,9 @@ public:
     void test_album(QSqlQuery &q);
     void test_genre(QSqlQuery &q);
 public Q_SLOTS:
-
+    void filterByGenre(const QString &genre);
+    void filterByArtist(const QString &artist);
+    void filterRecent(int day_limit);
     virtual void viewContent();
 protected:
     virtual void init() override;
@@ -166,6 +168,24 @@ public:
 
     ~TracklistModel();
     // AbstractModel interface
+    /**
+     * @brief populateFromAlbum populate this model
+     * with the content from the designated album.
+     * @param album The album to query the tracks from.
+     */
+    void populateFromAlbum(const QString &album);
+    /**
+     * @brief populateFromPlaylist populate this model
+     * with the content from the designated album.
+     * @param pls The Playlist to query the Tracks from
+     */
+    void populateFromPlaylist(int plsID);
+    /**
+     * @brief setDefault Populate this model with default
+     * content. This will populate this model with every
+     * tracks available from the database
+     */
+    void setDefault();
 protected:
     virtual void init() override;
 

@@ -101,6 +101,7 @@ void AbstractModel::setQuery(const QString &str)
     if(queryStr != str)
     {
         queryStr = str;
+        refresh();
         Q_EMIT queryChanged();
     }
 }
@@ -295,6 +296,46 @@ void AlbumModel::test_genre(QSqlQuery &q)
     }
 }
 
+void AlbumModel::filterByGenre(const QString &genre)
+{
+    QString cmd = QString("SELECT albumTitle as title,albumArtist as artist,"
+                           "genre,cover as coverpath,"
+                           "COUNT(albumTitle) as tracks ,SUM(length) as duration , "
+                           "year, genre FROM BaseTableTracks "
+                           "WHERE genre = '%1' "
+                           "GROUP BY albumTitle "
+                           "ORDER BY albumTitle;").arg(genre);
+    setQuery(cmd);
+}
+
+void AlbumModel::filterByArtist(const QString &artist)
+{
+    QString cmd = QString("SELECT albumTitle as title,albumArtist as artist,"
+                           "genre,cover as coverpath,"
+                           "COUNT(albumTitle) as tracks ,SUM(length) as duration , "
+                           "year, genre FROM BaseTableTracks "
+                           "WHERE albumArtist = '%1' "
+                           "GROUP BY albumTitle "
+                           "ORDER BY albumTitle;").arg(artist);
+    setQuery(cmd);
+
+}
+
+void AlbumModel::filterRecent(int day_limit)
+{
+
+    int recent_date = QDateTime::currentDateTime().toTime_t();
+            - (day_limit * DAY_TO_SECONDS);
+    QString cmd = QString("SELECT albumTitle as title,albumArtist as artist,"
+                           "genre,cover as coverpath,"
+                           "COUNT(albumTitle) as tracks ,SUM(length) as duration , "
+                           "year, genre FROM BaseTableTracks "
+                           "WHERE addedDate >= %1 "
+                           "GROUP BY albumTitle "
+                           "ORDER BY albumTitle;").arg(QString::number(recent_date));
+    setQuery(cmd);
+}
+
 
 
 void AlbumModel::viewContent()
@@ -350,6 +391,25 @@ TracklistModel::TracklistModel(AbstractDataAccessObject *data_access)
 TracklistModel::~TracklistModel()
 {
     resetInternalData();
+}
+
+void TracklistModel::populateFromAlbum(const QString &album)
+{
+    QString cmd = QString("SELECT * FROM BaseTableTracks WHERE  albumTitle ='%1' ORDER BY trackNumber;").arg(album);
+    setQuery(cmd);
+
+}
+
+void TracklistModel::populateFromPlaylist(int plsID)
+{
+    QString cmd = QString("SELECT * FROM BaseTableTracks  NATURAL JOIN (select trackID FROM PlaylistTrack   JOIN Playlist on  PlaylistTrack.playlistID= %1 ORDER BY plsTrackID;").arg(QString::number(plsID));
+    setQuery(cmd);
+}
+
+void TracklistModel::setDefault()
+{
+    QString cmd = QString("SELECT * FROM BaseTableTracks;");
+    setQuery(cmd);
 }
 
 

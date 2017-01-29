@@ -62,6 +62,11 @@ bool GUIManager::isPaused()
 {
     return false;
 }
+
+AbstractModel *GUIManager::tracklistModel()
+{
+    return facade->tracklistModel();
+}
 // Model Object Factories:
 
 
@@ -82,7 +87,7 @@ AbstractModel *GUIManager::albumByGenre(const QString &genreName)
 
 AbstractModel *GUIManager::albumContents(const QString &titleAlbum)
 {
-    return facade->albumContent(titleAlbum);
+    return facade->albumContentModel(titleAlbum);
 }
 
 
@@ -243,22 +248,26 @@ QString GUIManager::version() const
 
 bool GUIManager::createPlaylist(const QString &pls)
 {
-    return facade->createPlaylist(pls);
+    facade->createPlaylist(pls);
+    return true;
 }
 
 bool GUIManager::removePlaylist(const QString &pls)
 {
-    return facade->removePlaylist(pls);
+    facade->removePlaylist(pls);
+    return true;
 }
 
 bool GUIManager::removeFromPlaylist(const QString &pls, int trackID)
 {
-    return facade->removeFromPlaylist(pls, trackID);
+    facade->removeFromPlaylist(pls, trackID);
+    return true;
 }
 
 bool GUIManager::addToPlaylist(const QString &pls, int trackID)
 {
     facade->addToPlaylist(pls, trackID);
+    return true;
 }
 
 

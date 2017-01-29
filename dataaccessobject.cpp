@@ -91,7 +91,7 @@ DataAccessObject::DataAccessObject(const QString& path)
 //        exit(-1);
 
 //    }
-    add_query = QSqlQuery(db);
+    add_query = QSqlQuery(database);
 }
 
 

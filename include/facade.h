@@ -55,7 +55,7 @@ public:
     virtual AbstractModel* tracklistModel() = 0;
     virtual AbstractModel* playlistModel() = 0;
     virtual AbstractModel* currentPlaylist() = 0;
-    virtual AbstractModel* albumContent(const QString &albumTitle) = 0;
+    virtual AbstractModel* albumContentModel(const QString &albumTitle) = 0;
     virtual AbstractModel* artistModel() = 0;
     virtual AbstractModel* albumByGenre(const QString& genreName) = 0;
     virtual AbstractModel* artistAlbumModel(const QString &artistName) = 0;
@@ -240,6 +240,15 @@ private:
     DBusManager *Busmanager;
 
 
+
+    // Facade interface
+public:
+    virtual AbstractModel *albumContentModel(const QString &albumTitle) override;
+    virtual AbstractModel *artistModel() override;
+    virtual AbstractModel *albumByGenre(const QString &genreName) override;
+    virtual AbstractModel *artistAlbumModel(const QString &artistName) override;
+    virtual AbstractModel *recentAlbumsModel() override;
+    virtual AbstractModel *playlistContents(const QString &pls) override;
 };
 
 class FacadeStubs : public Facade
@@ -286,6 +295,24 @@ public:
     virtual QString author() const override;
     virtual QString appName() const override;
     virtual QString version() const override;
+
+    // Facade interface
+public:
+    virtual void createPlaylist(const QString &title) override;
+    virtual void addToPlaylist(const QString &pls, int trackID) override;
+    virtual void removePlaylist(const QString &pls) override;
+    virtual void removeFromPlaylist(const QString &pls, int trackID) override;
+    virtual AbstractModel *genreModel() override;
+    virtual AbstractModel *albumContentModel(const QString &albumTitle) override;
+    virtual AbstractModel *artistModel() override;
+    virtual AbstractModel *albumByGenre(const QString &genreName) override;
+    virtual AbstractModel *artistAlbumModel(const QString &artistName) override;
+    virtual AbstractModel *recentAlbumsModel() override;
+    virtual AbstractModel *playlistContents(const QString &pls) override;
+    virtual void seek(int pos) override;
+    virtual void setMedia(const QString &path) override;
+    virtual void addAlbum(const QString &album) override;
+    virtual int bitrate() override;
 };
 
 #endif // FACADE_H

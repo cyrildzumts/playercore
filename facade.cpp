@@ -27,6 +27,9 @@ PlayerFacade::PlayerFacade(const QString &conf)
     genres = new GenreModel(data_access_object);
     tracklists = new TracklistModel(data_access_object);
     playlists = nullptr;
+    search_result = nullptr;
+
+
     init();
 }
 
@@ -122,6 +125,34 @@ AbstractModel *PlayerFacade::albumModel()
     }
     return albums;
 }
+
+
+AbstractModel *PlayerFacade::albumContentModel(const QString &albumTitle)
+{
+    tracklists->setQuery(albumTitle);
+    return tracklists;
+}
+
+AbstractModel *PlayerFacade::artistModel()
+{
+}
+
+AbstractModel *PlayerFacade::albumByGenre(const QString &genreName)
+{
+}
+
+AbstractModel *PlayerFacade::artistAlbumModel(const QString &artistName)
+{
+}
+
+AbstractModel *PlayerFacade::recentAlbumsModel()
+{
+}
+
+AbstractModel *PlayerFacade::playlistContents(const QString &pls)
+{
+}
+
 
 AbstractModel *PlayerFacade::tracklistModel()
 {
@@ -515,3 +546,64 @@ QString FacadeStubs::version() const
     return "";
 }
 
+
+
+void FacadeStubs::createPlaylist(const QString &title)
+{
+}
+
+void FacadeStubs::addToPlaylist(const QString &pls, int trackID)
+{
+}
+
+void FacadeStubs::removePlaylist(const QString &pls)
+{
+}
+
+void FacadeStubs::removeFromPlaylist(const QString &pls, int trackID)
+{
+}
+
+AbstractModel *FacadeStubs::genreModel()
+{
+}
+
+AbstractModel *FacadeStubs::albumContentModel(const QString &albumTitle)
+{
+}
+
+AbstractModel *FacadeStubs::artistModel()
+{
+}
+
+AbstractModel *FacadeStubs::albumByGenre(const QString &genreName)
+{
+}
+
+AbstractModel *FacadeStubs::artistAlbumModel(const QString &artistName)
+{
+}
+
+AbstractModel *FacadeStubs::recentAlbumsModel()
+{
+}
+
+AbstractModel *FacadeStubs::playlistContents(const QString &pls)
+{
+}
+
+void FacadeStubs::seek(int pos)
+{
+}
+
+void FacadeStubs::setMedia(const QString &path)
+{
+}
+
+void FacadeStubs::addAlbum(const QString &album)
+{
+}
+
+int FacadeStubs::bitrate()
+{
+}

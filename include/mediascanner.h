@@ -14,15 +14,57 @@ public:
     virtual ~IMediaScanner(){}
 
     virtual void init(const QString &sourcedir) = 0;
+    /**
+     * @brief scanSourceDirectory
+     */
     virtual void scanSourceDirectory() = 0;
+    /**
+     * @brief exec
+     * @param cmd
+     * @return
+     */
     virtual bool exec(const QString &cmd) = 0;
+    /**
+     * @brief setSourceDirectory
+     * @param dirpath
+     */
     virtual void setSourceDirectory(const QString &dirpath) = 0;
+    /**
+     * @brief getLastAddedDate queries when the file was added
+     * into the database.
+     * @return The date is return in seconds.
+     */
     virtual int getLastAddedDate() = 0;
+    /**
+     * @brief getLastModifiedDate queries the last time the file was
+     * modified.
+     * @return the date in seconds
+     */
     virtual int getLastModifiedDate() = 0;
+    /**
+     * @brief updateData search the source directory for
+     * new files.
+     */
     virtual void updateData() = 0;
+    /**
+     * @brief setDataAccessObject
+     * @param data_access
+     */
     virtual void setDataAccessObject(AbstractDataAccessObject *data_access) = 0;
+    /**
+     * @brief isSourceDirectoryConfigured
+     * @return
+     */
     virtual bool isSourceDirectoryConfigured() const = 0;
+    /**
+     * @brief isSourceDirectoryScanned
+     * @return
+     */
     virtual bool isSourceDirectoryScanned()const = 0;
+    /**
+     * @brief hasDataAccessObject
+     * @return
+     */
     virtual bool hasDataAccessObject() const = 0;
 };
 

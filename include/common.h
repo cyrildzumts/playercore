@@ -3,6 +3,10 @@
 
 #include <QString>
 
+
+#define DAY_TO_MILLISECONDS ((unsigned int) (24*60*60*1000))
+#define DAY_TO_SECONDS ((unsigned int) (24*60*60))
+
 enum PlaybackMode
 {
     CurrentItemOnce = 0,
