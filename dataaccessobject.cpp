@@ -17,9 +17,11 @@ DataAccessObject::DataAccessObject(const QString& path)
     */
     appName = QString("Player");
     databasePath = path;
+    driver = "QSQLITE";
     connectionName = QString("DataAccess");
-    database = QSqlDatabase::addDatabase("QSQLITE",connectionName);
+    database = QSqlDatabase::addDatabase(driver);
     database.setDatabaseName(databasePath);
+    db = QSqlDatabase::cloneDatabase(database, connectionName);
 
 
     addedDate = 0;
@@ -31,7 +33,18 @@ DataAccessObject::DataAccessObject(const QString& path)
                   << database.lastError().text().toStdString()
                   << std::endl
                   << "Exiting ..." << std::endl;
-        QSqlDatabase::removeDatabase(connectionName);
+        //QSqlDatabase::removeDatabase(connectionName);
+        exit(-1);
+
+    }
+    if(!db.open())
+    {
+        std::cout << __FUNCTION__
+                  << " Could not be opened. "
+                  << db.lastError().text().toStdString()
+                  << std::endl
+                  << "Exiting ..." << std::endl;
+        //QSqlDatabase::removeDatabase(connectionName);
         exit(-1);
 
     }
@@ -44,6 +57,18 @@ DataAccessObject::DataAccessObject(const QString& path)
         qDebug() << __PRETTY_FUNCTION__ << " - "  << __LINE__ <<
                     "Foreign Key error : " << _query.lastError().text() ;
     }
+//    else
+//    {
+//        if(_query.exec("PRAGMA foreign_keys;"))
+//        {
+//           if( _query.next())
+//           {
+//                qDebug() << "Database Foreign Key : "
+//                         << _query.value(0).toInt();
+//           }
+//        }
+
+//    }
     if(!_query.exec("PRAGMA SYNCHRONOUS = OFF;"))
     {
          qDebug() << __PRETTY_FUNCTION__ << " - "  << __LINE__ <<
@@ -54,29 +79,31 @@ DataAccessObject::DataAccessObject(const QString& path)
          qDebug() << __PRETTY_FUNCTION__ << " - "  << __LINE__ <<
                      "Journal mode error : " << _query.lastError().text() ;
     }
-    auto add_db = QSqlDatabase::cloneDatabase(database, "ADD");
-    if(!add_db.open())
-    {
-        std::cout << __FUNCTION__
-                  << " Could not be opened. "
-                  << add_db.lastError().text().toStdString()
-                  << std::endl
-                  << "Exiting ..." << std::endl;
-        QSqlDatabase::removeDatabase("ADD");
-        exit(-1);
+    //auto add_db = QSqlDatabase::cloneDatabase(database, "ADD");
+//    if(!add_db.open())
+//    {
+//        std::cout << __FUNCTION__
+//                  << " Could not be opened. "
+//                  << add_db.lastError().text().toStdString()
+//                  << std::endl
+//                  << "Exiting ..." << std::endl;
+//        QSqlDatabase::removeDatabase("ADD");
+//        exit(-1);
 
-    }
-    add_query = QSqlQuery(add_db);
+//    }
+    add_query = QSqlQuery(db);
 }
 
 
 DataAccessObject::~DataAccessObject()
 {
-    _query.finish();
+    qDebug() << __PRETTY_FUNCTION__ << " quitting ...";
+    _query.clear();
     add_query.clear();
-    database.close();
+    database.commit();
     QSqlDatabase::removeDatabase(connectionName);
     QSqlDatabase::removeDatabase("ADD");
+    database.close();
 }
 
 bool DataAccessObject::isOpen()const
@@ -136,9 +163,9 @@ void DataAccessObject::addTrack(const QString &path)
 void DataAccessObject::addTrack(const Track &track)
 {
 
-    if(database.open())
+    if(database.isOpen())
     {
-        // add_query = QSqlQuery(database);
+         //add_query = QSqlQuery(database);
          if(add_query.prepare(
                      "INSERT INTO BaseTableTracks (albumTitle,artist, albumArtist, title, genre,trackUrl,cover,trackNumber,length,playCount, favorite, bitrate, year, addedDate, modifiedDate) "
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"))
@@ -165,7 +192,7 @@ void DataAccessObject::addTrack(const Track &track)
                           << __LINE__
                           <<" error :" << add_query.lastError();
              }
-             //add_query.finish();
+
          }
 
          else
@@ -212,7 +239,7 @@ QSqlQuery DataAccessObject::query(const QString &command)
     QSqlQuery result;
     if(!command.isEmpty())
     {
-        if(database.open())
+        if(database.isOpen())
         {
             result = database.exec(command);
             //database.commit();
@@ -220,7 +247,10 @@ QSqlQuery DataAccessObject::query(const QString &command)
                      //<< command ;
             if(result.lastError().isValid())
             {
-                qDebug() << __PRETTY_FUNCTION__ << " Error : database query command Error : "
+                qDebug() << __PRETTY_FUNCTION__
+                         << " Error : database query command Error :"
+                         << "Command issued :: " << command << "\n"
+                         << " Error tracked : "
                          << result.lastError().text();
             }
         }

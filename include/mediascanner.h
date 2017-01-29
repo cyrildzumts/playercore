@@ -13,7 +13,9 @@ class IMediaScanner : public QObject
 public:
     virtual ~IMediaScanner(){}
 
+    virtual void init(const QString &sourcedir) = 0;
     virtual void scanSourceDirectory() = 0;
+    virtual bool exec(const QString &cmd) = 0;
     virtual void setSourceDirectory(const QString &dirpath) = 0;
     virtual int getLastAddedDate() = 0;
     virtual int getLastModifiedDate() = 0;
@@ -36,6 +38,8 @@ public:
 
     // IMediaScanner interface
 public:
+    virtual void init(const QString &sourcedir);
+    virtual bool exec(const QString &cmd);
     virtual void scanSourceDirectory() override;
     void scanSourceDirectory2();
     virtual void setSourceDirectory(const QString &dirpath) override;

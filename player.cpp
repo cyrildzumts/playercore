@@ -13,6 +13,12 @@ Player::Player(QMediaPlayer *parent):QMediaPlayer(parent)
 
 }
 
+Player::~Player()
+{
+    qDebug() << __PRETTY_FUNCTION__ << " quitting ...";
+    playlist = nullptr;
+}
+
 
 
 void Player::updateCurrentMedia(QMediaPlayer::MediaStatus status)

@@ -22,6 +22,7 @@ class Playlistmanager : public IPlaylistManager
 {
 public:
     Playlistmanager(AbstractDataAccessObject* data_acces);
+    ~Playlistmanager();
     // IPlaylistManager interface
 public:
     virtual void setDataAccessObject(AbstractDataAccessObject *data_acces) override;

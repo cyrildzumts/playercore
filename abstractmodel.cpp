@@ -6,6 +6,15 @@ void AbstractModel::setRoles(const QHash<int, QByteArray> &roles)
         _roles = roles;
 }
 
+void AbstractModel::populate()
+{
+    if(!_query.exec(queryStr))
+    {
+        qDebug() << __PRETTY_FUNCTION__
+                 << _query.lastError().text();
+    }
+}
+
 void AbstractModel::setDataAccessor(AbstractDataAccessObject *data_access)
 {
     this->data_access = data_access;
@@ -104,8 +113,7 @@ QSqlQuery &AbstractModel::getQuery()
 void AbstractModel::resetInternalData()
 {
     beginResetModel();
-    //_query.finish();
-    _query.clear();
+    _query.finish();
     endResetModel();
 }
 
@@ -113,6 +121,7 @@ QHash<int, QByteArray> AbstractModel::roleNames() const
 {
     return _roles;
 }
+
 
 QHash<int, QByteArray> AbstractModel::albumRoles()
 {
@@ -172,7 +181,14 @@ void AbstractModel::refresh()
     resetInternalData();
 
     beginInsertRows(QModelIndex(), FIRST, FIRST);
-    _query = data_access->query(queryStr);
+    //_query = data_access->query(queryStr);
+    if(!_query.exec(queryStr))
+    {
+        qDebug() << __PRETTY_FUNCTION__
+                 << " - Query : "
+                 << queryStr << " -- "
+                 << _query.lastError().text();
+    }
     if( !_query.isActive())
     {
         qDebug()<< "AbstractmModel::refresh(): Error\n"
@@ -196,10 +212,12 @@ AlbumModel::AlbumModel(AbstractDataAccessObject *data_access)
 }
 AlbumModel::~AlbumModel()
 {
+    qDebug() << __PRETTY_FUNCTION__ << " called ...";
     //_query.finish();
-    query.clear();
+    _query.clear();
 
 }
+
 void AlbumModel::init()
 {
     queryStr = QString("SELECT albumTitle as title,albumArtist as artist,"
@@ -209,36 +227,99 @@ void AlbumModel::init()
                        "GROUP BY albumTitle "
                        "ORDER BY albumTitle;");
 
-    query = data_access->query(queryStr);
-    setQuery(this->query);
+
     _roles = AbstractModel::albumRoles();
 
 }
 
-/*
-void AlbumModel::refresh()
-{
-    resetInternalData();
 
-    beginInsertRows(QModelIndex(), FIRST, FIRST);
-    _query = data_access->query(queryStr);
-     if( !_query.isActive())
-     {
-         qDebug()<< "AlbumModel::refresh(): Error\n"
-                 << "Error : "
-                 << _query.lastError();
-     }
-    endInsertRows();
-    Q_EMIT dataChanged();
+void AlbumModel::test_queries()
+{
+    //QSqlQuery query1 = data_access->query(queryStr);
+    QSqlQuery query1 ;
+        if(!query1.exec(queryStr))
+        {
+            qDebug() << __PRETTY_FUNCTION__
+                     << query1.lastError().text();
+        }
+    QString str = QString("SELECT genre FROM BaseTableTracks GROUP BY genre ORDER BY genre;");
+    //QSqlQuery query2 = data_access->query(str);
+    QSqlQuery query2 ;
+    if(!query2.exec(queryStr))
+    {
+        qDebug() << __PRETTY_FUNCTION__
+                 << query2.lastError().text();
+    }
+    qDebug() << "First call : Test Album : " ;
+    test_album(query1);
+    qDebug() << "First call : Test Album done.";
+
+
+
+    qDebug() << "First call : Test Genre : " ;
+    test_genre(query2);
+    qDebug() << "First call : Test Genre done.";
+
+    qDebug() << "Second call : Test Album : " ;
+
+    test_album(query1);
+    qDebug() << "Second call : Test Album done ";
 
 }
-*/
+
+void AlbumModel::test_album(QSqlQuery &q)
+{
+    if(q.isSelect() and q.isActive())
+    {
+        q.seek(-1);
+        int i = 0;
+        while(q.next())
+        {
+            i++;
+            qDebug() <<i << " - " <<  q.value("title").toString();
+        }
+    }
+}
+
+void AlbumModel::test_genre(QSqlQuery &q)
+{
+    if(q.isSelect() and q.isActive())
+    {
+        q.seek(-1);
+        int i= 0;
+        while(q.next())
+        {
+            i++;
+            qDebug() <<i << " - " <<  q.value("genre").toString();
+        }
+    }
+}
+
+
+
+void AlbumModel::viewContent()
+{
+    int i = 0;
+    QSqlQuery query(_query);
+    if(query.isSelect() and query.isActive())
+    {
+        query.seek(-1);
+
+        while(query.next())
+        {
+            i++;
+            qDebug() <<i << " - " <<  query.value("title").toString();
+        }
+    }
+}
+
 
 
 ArtistModel::ArtistModel(AbstractDataAccessObject *data_access)
 {
     this->data_access  = data_access;
     this->setRoles(AbstractModel::artistRoles());
+     queryStr = QString("SELECT albumArtist as artist,cover FROM BaseTableTracks GROUP BY albumArtist ORDER BY albumArtist;");
 
     connect(this, &ArtistModel::queryChanged,
             this, &ArtistModel::refresh);
@@ -247,8 +328,9 @@ ArtistModel::ArtistModel(AbstractDataAccessObject *data_access)
 
 void ArtistModel::init()
 {
-    queryStr = QString("SELECT albumArtist as artist,cover FROM BaseTableTracks GROUP BY albumArtist ORDER BY albumArtist;");
-    _query = data_access->query(queryStr);
+
+    //_query = data_access->query(queryStr);
+
 }
 
 
@@ -270,18 +352,12 @@ TracklistModel::~TracklistModel()
     resetInternalData();
 }
 
+
 void TracklistModel::init()
 {
 
 }
 
-
-void TracklistModel::refresh()
-{
-    resetInternalData();
-    _query = data_access->query(queryStr);
-    Q_EMIT dataChanged();
-}
 
 void TracklistModel::onQueryChanged()
 {
@@ -293,18 +369,21 @@ void TracklistModel::onQueryChanged()
 GenreModel::GenreModel(AbstractDataAccessObject *data_access)
 {
     this->data_access = data_access;
+    queryStr = QString("SELECT genre FROM BaseTableTracks GROUP BY genre ORDER BY genre;");
+    _roles = AbstractModel::genreRoles();
     init();
 }
 
 GenreModel::~GenreModel()
 {
+    qDebug() << __PRETTY_FUNCTION__ << " called ...";
     _query.clear();
 }
 
 void GenreModel::init()
 {
-    queryStr = QString("SELECT genre FROM BaseTableTracks GROUP BY genre ORDER BY genre;");
 
-    _query = data_access->query(queryStr);
-    _roles = AbstractModel::genreRoles();
+
 }
+
+

@@ -5,12 +5,27 @@ Playlistmanager::Playlistmanager(AbstractDataAccessObject *data_acces)
     this->data_acces = data_acces;
 }
 
+Playlistmanager::~Playlistmanager()
+{
+    qDebug() << __PRETTY_FUNCTION__ << " quitting ...";
+}
+
 
 int Playlistmanager::createPlaylist(const QString& title)
 {
-    auto query = data_acces->query(QString("REPLACE INTO Playlist (title) VALUES('%1') ;").arg(title));
+    QSqlQuery query;
+    int id = -1;
+    if (query.exec(QString("REPLACE INTO Playlist (title) VALUES('%1') ;").arg(title)))
+    {
+        id = query.lastInsertId().toInt();
+    }
+    else
+    {
+        qDebug() << __PRETTY_FUNCTION__ << " : "
+                 << query.lastError().text();
+    }
 
-    return query.lastInsertId().toInt();
+    return id;
 }
 
 bool Playlistmanager::removePlaylist(int playlistID)
@@ -25,15 +40,31 @@ bool Playlistmanager::removePlaylist(int playlistID)
 
 bool Playlistmanager::addToPlaylist(int playlistID, int trackID)
 {
-    auto query = data_acces->query(QString("INSERT INTO PlaylistTrack (playlistID,trackID) VALUES('%1', '%2') ;").arg(QString::number(playlistID),QString::number(trackID)));
-    return query.lastError().isValid();
+    QSqlQuery query ;
+    bool flag;
+    flag = query.exec(QString("INSERT INTO PlaylistTrack (playlistID,trackID) VALUES('%1', '%2') ;").arg(QString::number(playlistID),QString::number(trackID)));
+    if(!flag)
+    {
+        qDebug()<< __PRETTY_FUNCTION__
+                << " : "
+                << query.lastError().text();
+    }
+    return flag;
 }
 
 bool Playlistmanager::removeFromPlaylist(int playlistID, int trackID)
 {
-    auto query = data_acces->query(QString("DELETE  * FROM  PlaylistTrack  WHERE trackplaylistID='%1' AND trackID ='%2' ;").arg(QString::number(playlistID),QString::number(trackID)));
+    QSqlQuery query ;
+    bool flag;
+    flag = query.exec(QString("DELETE  * FROM  PlaylistTrack  WHERE trackplaylistID='%1' AND trackID ='%2' ;").arg(QString::number(playlistID),QString::number(trackID)));
 
-    return query.lastError().isValid();
+    if(!flag)
+    {
+        qDebug()<< __PRETTY_FUNCTION__
+                << " : "
+                << query.lastError().text();
+    }
+    return flag;
 }
 
 bool Playlistmanager::removePlaylist(const QString &pls)

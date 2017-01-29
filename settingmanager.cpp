@@ -40,6 +40,7 @@ SettingManager::SettingManager(const QString &confPath)
 
 SettingManager::~SettingManager()
 {
+    qDebug() << __PRETTY_FUNCTION__ << " quitting ...";
 //    watcher->removePath(conf);
 //        disconnect(watcher, &QFileSystemWatcher::fileChanged,
 //                   this, &SettingsController::updateConfig);

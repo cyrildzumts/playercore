@@ -38,10 +38,7 @@ public:
     Playlist(const QString name);
     Playlist(const Playlist &pls);
     Playlist &operator=(const Playlist & pls);
-    virtual ~Playlist()
-    {
-        clear();
-    }
+    virtual ~Playlist();
 
     QString playlistTitle() const;
     void setPlaylistTitle(const QString &playlistTitle);
@@ -262,6 +259,7 @@ public Q_SLOTS:
      */
     virtual void shuffle();
 
+    virtual void setRoles(const QHash<int, QByteArray> &roles);
     // QAbstractlistModel Overwriting :
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual void resetInternalData();
@@ -333,9 +331,15 @@ protected:
      * to access these indices.
      */
     std::vector<int> randomIndices;
-
+    QString queryStr;
+    QHash<int, QByteArray> _roles;
+    QSqlQuery _query;
     QString _currentMedia;
     AbstractDataAccessObject *data_access;
+
+
+public slots:
+
 };
 
 
@@ -346,6 +350,7 @@ class Playlist2 : public Playlist
 {
 public:
      explicit Playlist2(AbstractDataAccessObject *data_access);
+    virtual ~Playlist2();
     virtual void next();
     virtual void previous();
     virtual void setPlaybackMode(int mode);

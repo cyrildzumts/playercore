@@ -7,6 +7,7 @@ GUIManager::GUIManager()
 
 GUIManager::~GUIManager()
 {
+    qDebug() << __PRETTY_FUNCTION__ << " deleted ...";
     delete facade;
 }
 
@@ -34,7 +35,7 @@ int GUIManager::position()
 // TODO
 void GUIManager::setPosition(int position)
 {
-
+    facade->seek(position);
 }
 
 // TODO
@@ -47,52 +48,67 @@ QString GUIManager::positionStr()
 // TODO
 bool GUIManager::isPlaying()
 {
-
+    return false;
 }
 
 // TODO
 bool GUIManager::isStopped()
 {
-
+    return false;
 }
 
 //TODO
 bool GUIManager::isPaused()
 {
-
+    return false;
 }
 // Model Object Factories:
 
 
-AlbumModel *GUIManager::albumModel()
+AbstractModel *GUIManager::albumModel()
 {
-    //AbstractModel *m ;
     return facade->albumModel();
 }
 
-GenreModel *GUIManager::genreModel()
+AbstractModel *GUIManager::genreModel()
 {
-    //AbstractModel *m ;
     return facade->genreModel();
 }
 
-//TODO
-AbstractModel *GUIManager::albumContents()
+AbstractModel *GUIManager::albumByGenre(const QString &genreName)
 {
+    return facade->albumByGenre(genreName);
+}
 
+AbstractModel *GUIManager::albumContents(const QString &titleAlbum)
+{
+    return facade->albumContent(titleAlbum);
 }
 
 
-//TODO
 AbstractModel *GUIManager::artistsModel()
 {
-
+    return facade->artistModel();
 }
 
-//TODO
-AbstractModel *GUIManager::artistAlbumsModel()
+AbstractModel *GUIManager::artistAlbumsModel(const QString &artistName)
 {
+    return facade->artistAlbumModel(artistName);
+}
 
+AbstractModel *GUIManager::recentAlbum()
+{
+    return facade->recentAlbumsModel();
+}
+
+AbstractModel *GUIManager::playlistModel()
+{
+    return facade->playlistModel();
+}
+
+AbstractModel *GUIManager::playlistContent(const QString &pls)
+{
+    return facade->playlistContents(pls);
 }
 
 //TODO
@@ -106,7 +122,7 @@ void GUIManager::onAlbumClicked(const QString &title)
 
 }
 
-//TODO
+
 void GUIManager::onPlayAlbumPressed(const QString &title)
 {
     facade->playAlbum(title);
@@ -114,7 +130,6 @@ void GUIManager::onPlayAlbumPressed(const QString &title)
 
 // Playlist In
 
-//TODO
 void GUIManager::setCurrentIndex(int index)
 {
     facade->setCurrentIndex(index);
@@ -155,13 +170,12 @@ QString GUIManager::durationStr()
     return facade->durationStr();
 }
 
-//TODO
+
 int GUIManager::length()
 {
     return facade->length();
 }
 
-// TODO
 QString GUIManager::lengthStr()
 {
     return facade->lengthStr();
@@ -226,6 +240,28 @@ QString GUIManager::version() const
 {
     return facade->version();
 }
+
+bool GUIManager::createPlaylist(const QString &pls)
+{
+    return facade->createPlaylist(pls);
+}
+
+bool GUIManager::removePlaylist(const QString &pls)
+{
+    return facade->removePlaylist(pls);
+}
+
+bool GUIManager::removeFromPlaylist(const QString &pls, int trackID)
+{
+    return facade->removeFromPlaylist(pls, trackID);
+}
+
+bool GUIManager::addToPlaylist(const QString &pls, int trackID)
+{
+    facade->addToPlaylist(pls, trackID);
+}
+
+
 
 
 

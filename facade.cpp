@@ -32,6 +32,7 @@ PlayerFacade::PlayerFacade(const QString &conf)
 
 PlayerFacade::~PlayerFacade()
 {
+    qDebug() << __PRETTY_FUNCTION__ << " called...";
     int position = player->position();
     player->stop();
     int index = playlist->currentIndex();
@@ -42,20 +43,27 @@ PlayerFacade::~PlayerFacade()
     {
         ids.push_back(track.ID);
     }
+    qDebug() << __PRETTY_FUNCTION__ << " saving application states";
     settings->setPlayerPlaybackMode(mode);
     settings->setPlayerPosition(position);
     settings->setPlayerTrackIndex(index);
     settings->setPlaylistContent(ids);
-    delete playlist;
-    delete Busmanager;
+    qDebug() << __PRETTY_FUNCTION__ << " application states saved";
+
+
+    //delete Busmanager;
     delete playlistManager;
     delete player;
+    delete playlist;
+    delete playlists;
     delete mediascanner;
     delete albums;
+    delete genres;
     delete tracklists;
-    delete playlists;
+
     delete data_access_object;
     delete settings;
+    qDebug() << __PRETTY_FUNCTION__ << " deleted ...";
 
 
 }
@@ -67,15 +75,24 @@ void PlayerFacade::init()
     int mode = settings->playerPlaybackMode();
     std::vector<int> ids = settings->playlistContent();
     QString mediaSourcePath = settings->getMediaSourcePath();
-    mediascanner->setSourceDirectory(mediaSourcePath);
+    mediascanner->init(mediaSourcePath);
     mediascanner->scanSourceDirectory();
     playlist->setTracklist(ids);
     playlist->setPlaybackMode(mode);
     player->setPlaylist(playlist);
     player->setPosition(position);
     playlist->setCurrentIndex(index);
-    albums->refresh();
-    genres->refresh();
+    //albums->test_queries();
+    albums->populate();
+//    qDebug() << "Albums Contents :";
+//    albums->viewContent();
+    genres->populate();
+
+//    qDebug() << "Second Albums Contents :";
+//    albums->viewContent();
+//    qDebug() << "Genres Contents :";
+//    genres->viewContent();
+
 }
 
 void PlayerFacade::update()
@@ -93,8 +110,16 @@ void PlayerFacade::playAlbum(const QString &album, int index)
     //Busmanager->nofity(playlist->album(),playlist->artist(), playlist->cover());
 }
 
-AlbumModel *PlayerFacade::albumModel()
+AbstractModel *PlayerFacade::albumModel()
 {
+
+    if(albums)
+    {
+//        qDebug() << __PRETTY_FUNCTION__  << " Album List :";
+//        albums->refresh();
+//        albums->viewContent();
+//        qDebug() << __PRETTY_FUNCTION__ << " Album List End";
+    }
     return albums;
 }
 
@@ -108,8 +133,15 @@ AbstractModel *PlayerFacade::playlistModel()
     return playlists;
 }
 
-GenreModel *PlayerFacade::genreModel()
+AbstractModel *PlayerFacade::genreModel()
 {
+    if(genres)
+    {
+//        qDebug() << __PRETTY_FUNCTION__  << " Genre List :";
+//        genres->refresh();
+//        genres->viewContent();
+//        qDebug() << __PRETTY_FUNCTION__ << " Genre List End";
+    }
     return genres;
 }
 
@@ -291,7 +323,7 @@ void FacadeStubs::update()
     qDebug()<< __FUNCTION__ << " called." ;
 }
 
-AlbumModel *FacadeStubs::albumModel()
+AbstractModel *FacadeStubs::albumModel()
 {
     qDebug()<< __FUNCTION__ << " called." ;
     return nullptr;

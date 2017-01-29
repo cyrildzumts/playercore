@@ -26,6 +26,7 @@ class Player : public QMediaPlayer
 
     public:
         Player(QMediaPlayer *parent = 0);
+        ~Player();
 
         void setPlaylist(Playlist2* _playlist);
     public Q_SLOTS:

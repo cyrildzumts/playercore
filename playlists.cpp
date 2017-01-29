@@ -218,6 +218,12 @@ Playlist &Playlist::operator=(const Playlist &pls)
     _playbackMode = pls.playbackMode();
     return *(this);
 }
+
+Playlist::~Playlist()
+{
+    qDebug() << __PRETTY_FUNCTION__ << " deleting playlist";
+    clear();
+}
 int Playlist::currentRandomIndex()const
 {
     return _randomCurrentIndex;
@@ -587,6 +593,11 @@ void Playlist::shuffle()
     }
 }
 
+void Playlist::setRoles(const QHash<int, QByteArray> &roles)
+{
+    _roles = roles;
+}
+
 
 QHash<int, QByteArray> Playlist::roleNames()const
 {
@@ -728,6 +739,11 @@ int Playlist::currentTrackID()const
 Playlist2::Playlist2(AbstractDataAccessObject *data_access): Playlist(data_access)
 {
     setPlaybackMode(2);
+}
+
+Playlist2::~Playlist2()
+{
+    qDebug() << __PRETTY_FUNCTION__ << " deleting Playlist2";
 }
 void Playlist2::changeState(PlaylistState *state)
 {

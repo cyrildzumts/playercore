@@ -47,11 +47,16 @@ public Q_SLOTS:
     virtual bool isPaused();
 
     // Model Object Factories:
-    AlbumModel *albumModel();
-    GenreModel *genreModel();
-    AbstractModel *albumContents();
+    AbstractModel *tracklistModel();
+    AbstractModel *albumModel();
+    AbstractModel *genreModel();
+    AbstractModel *albumByGenre(const QString& genreName);
+    AbstractModel *albumContents(const QString &tileAlbum);
     AbstractModel *artistsModel();
-    AbstractModel *artistAlbumsModel();
+    AbstractModel *artistAlbumsModel(const QString &artistName);
+    AbstractModel *recentAlbum();
+    AbstractModel *playlistModel();
+    AbstractModel *playlistContent(const QString &pls);
     Playlist *now_playingPlaylist();
 
 
@@ -85,6 +90,13 @@ public Q_SLOTS:
     virtual QString author()const;
     virtual QString appName()const;
     virtual QString version()const;
+
+    //PlaylistManager Interface
+    virtual bool createPlaylist(const QString& pls);
+    virtual bool removePlaylist(const QString& pls);
+    virtual bool removeFromPlaylist(const QString& pls, int trackID);
+    virtual bool addToPlaylist(const QString& pls, int trackID);
+
 
 
 Q_SIGNALS:

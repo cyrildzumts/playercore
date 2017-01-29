@@ -97,6 +97,8 @@ public:
     virtual void close() override;
 
 private:
+    QString driver;
+    QSqlDatabase db;
     /**
      * @brief  The Database which stores the meta data of the audio files
      */

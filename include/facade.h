@@ -19,16 +19,49 @@ public:
     virtual void playAlbum(const QString &album, int index = 0) = 0;
 
     // Playlist Manager Interface
+    /**
+     * @brief createPlaylist create a playlist with
+     * the title <<title>>. This method does nothing
+     * when the title is already in use.
+     * @param title The title of the new playlist.
+     */
     virtual void createPlaylist(const QString& title) = 0;
+    /**
+     * @brief addToPlaylist Add the song with the ID
+     * trackID into the Playlist whose title is pls.
+     * @param pls The destination playlist
+     * @param trackID The track's ID to be added.
+     */
     virtual void addToPlaylist(const QString& pls, int trackID) = 0;
+
+    /**
+     * @brief removePlaylist Remove the Playlist pls
+     * from the database. Does nothing if the
+     * parameter pls is empty or doesn't to an
+     * existing Playlist.
+     * @param pls The Playlist to be removed.
+     */
     virtual void removePlaylist(const QString& pls) = 0;
+    /**
+     * @brief removeFromPlaylist Remove the track
+     * pointed by trackID from the Playlist pls.
+     * @param pls
+     * @param trackID
+     */
     virtual void removeFromPlaylist(const QString& pls, int trackID) = 0;
     // Model Interface
-    virtual AlbumModel* albumModel() = 0;
-    virtual GenreModel* genreModel() = 0;
+    virtual AbstractModel* albumModel() = 0;
+    virtual AbstractModel* genreModel() = 0;
     virtual AbstractModel* tracklistModel() = 0;
     virtual AbstractModel* playlistModel() = 0;
     virtual AbstractModel* currentPlaylist() = 0;
+    virtual AbstractModel* albumContent(const QString &albumTitle) = 0;
+    virtual AbstractModel* artistModel() = 0;
+    virtual AbstractModel* albumByGenre(const QString& genreName) = 0;
+    virtual AbstractModel* artistAlbumModel(const QString &artistName) = 0;
+    virtual AbstractModel* recentAlbumsModel() = 0;
+    virtual AbstractModel *playlistContents(const QString &pls) = 0;
+
 
     // Player Interface
     virtual void play() = 0;
@@ -134,11 +167,11 @@ public:
     virtual void playAlbum(const QString &album, int index = 0) override;
 
     // Model
-    virtual AlbumModel *albumModel() override;
+    virtual AbstractModel *albumModel() override;
     virtual AbstractModel *tracklistModel() override;
     virtual AbstractModel *playlistModel() override;
     virtual AbstractModel *currentPlaylist() override;
-    virtual GenreModel *genreModel() override;
+    virtual AbstractModel *genreModel() override;
 
     // Player
     virtual void play() override;
@@ -193,8 +226,12 @@ private:
     AbstractDataAccessObject * data_access_object;
     Playlist2 *playlist;
     Player *player;
-    AlbumModel *albums;
-    GenreModel *genres;
+    AbstractModel *albums;
+    AbstractModel *artists;
+    AbstractModel *search_result;
+    AbstractModel *filtered_results;
+    AbstractModel *albumContent;
+    AbstractModel *genres;
     AbstractModel *tracklists;
     AbstractModel *playlists;
     IMediaScanner *mediascanner;
@@ -211,7 +248,7 @@ class FacadeStubs : public Facade
     // Facade interface
 public:
     virtual void update() override;
-    virtual AlbumModel *albumModel() override;
+    virtual AbstractModel *albumModel() override;
     virtual AbstractModel *tracklistModel() override;
     virtual AbstractModel *playlistModel() override;
     virtual AbstractModel *currentPlaylist() override;

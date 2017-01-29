@@ -62,9 +62,11 @@ class AbstractModel : public QAbstractListModel
     Q_OBJECT
 public:
 
-    virtual ~AbstractModel(){}
-    void setRoles(const QHash<int, QByteArray> &roles);
-
+    virtual ~AbstractModel(){
+        qDebug() << __PRETTY_FUNCTION__ << " called ...";
+    }
+    virtual void setRoles(const QHash<int, QByteArray> &roles);
+    virtual void populate();
     virtual void setQuery(QSqlQuery &query);
     virtual void setQuery(const QString &str);
     virtual QSqlQuery &getQuery();
@@ -91,7 +93,8 @@ protected:
     QHash<int, QByteArray> roleNames()const;
     virtual void init() = 0;
 public Q_SLOTS:
-    virtual void refresh();
+    virtual void refresh() ;
+    virtual void viewContent() {}
     virtual QVariant data(const QModelIndex &index, int role)const;
     virtual int rowCount(const QModelIndex &parent = QModelIndex())const;
 Q_SIGNALS:
@@ -112,24 +115,47 @@ class AlbumModel : public AbstractModel
 Q_OBJECT
 public:
     AlbumModel(AbstractDataAccessObject  *data_access = nullptr);
-    ~AlbumModel();
+    virtual ~AlbumModel();
+
+    void test_queries();
+    void test_album(QSqlQuery &q);
+    void test_genre(QSqlQuery &q);
 public Q_SLOTS:
+
+    virtual void viewContent();
 protected:
-    virtual void init();
+    virtual void init() override;
 private:
-    //QString queryStr;
-    QSqlQuery query;
+
+
+    // QAbstractItemModel interface
+public:
+
 };
 
 
-class ArtistModel : AbstractModel
+class ArtistModel : public AbstractModel
 {
+    Q_OBJECT
 public:
     ArtistModel(AbstractDataAccessObject *data_access);
 
     // AbstractModel interface
 protected:
+
     virtual void init() override;
+private:
+
+
+    // QAbstractItemModel interface
+public:
+
+
+    // AbstractModel interface
+public:
+
+
+public slots:
 };
 
 class TracklistModel : public AbstractModel
@@ -144,8 +170,10 @@ protected:
     virtual void init() override;
 
 public Q_SLOTS:
-    virtual void refresh() override;
+
     void onQueryChanged();
+
+private:
 
 };
 
@@ -154,11 +182,17 @@ class GenreModel : public AbstractModel
 Q_OBJECT
 public:
     GenreModel(AbstractDataAccessObject  *data_access = nullptr);
-    ~GenreModel();
+    virtual ~GenreModel();
 public Q_SLOTS:
 protected:
-    virtual void init();
-    QSqlQuery _query;
+    virtual void init() override;
+
+private:
+
+
+
+public slots:
+
 };
 
 #endif // ABSTRACTMODEL_H
