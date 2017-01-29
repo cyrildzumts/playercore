@@ -56,7 +56,7 @@ public Q_SLOTS:
     AbstractModel *artistAlbumsModel(const QString &artistName);
     AbstractModel *recentAlbum();
     AbstractModel *playlistModel();
-    AbstractModel *playlistContent(const QString &pls);
+    AbstractModel *playlistContent(int plsID);
     Playlist *now_playingPlaylist();
 
 

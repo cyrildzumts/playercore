@@ -60,7 +60,7 @@ public:
     virtual AbstractModel* albumByGenre(const QString& genreName) = 0;
     virtual AbstractModel* artistAlbumModel(const QString &artistName) = 0;
     virtual AbstractModel* recentAlbumsModel() = 0;
-    virtual AbstractModel *playlistContents(const QString &pls) = 0;
+    virtual AbstractModel *playlistContents(int plsID) = 0;
 
 
     // Player Interface
@@ -223,16 +223,18 @@ public:
     void sendNotify(const QString &summary, const QString &body, const QString &icon );
 
 private:
-    AbstractDataAccessObject * data_access_object;
+    AbstractDataAccessObject *data_access_object;
     Playlist2 *playlist;
     Player *player;
     AbstractModel *albums;
+    AbstractModel *artistAlbums;
     AbstractModel *artists;
     AbstractModel *search_result;
     AbstractModel *filtered_results;
     AbstractModel *albumContent;
     AbstractModel *genres;
     AbstractModel *tracklists;
+    AbstractModel *plsContents;
     AbstractModel *playlists;
     IMediaScanner *mediascanner;
     ISettingManager *settings;
@@ -248,7 +250,7 @@ public:
     virtual AbstractModel *albumByGenre(const QString &genreName) override;
     virtual AbstractModel *artistAlbumModel(const QString &artistName) override;
     virtual AbstractModel *recentAlbumsModel() override;
-    virtual AbstractModel *playlistContents(const QString &pls) override;
+    virtual AbstractModel *playlistContents(int plsID) override;
 };
 
 class FacadeStubs : public Facade
@@ -308,7 +310,7 @@ public:
     virtual AbstractModel *albumByGenre(const QString &genreName) override;
     virtual AbstractModel *artistAlbumModel(const QString &artistName) override;
     virtual AbstractModel *recentAlbumsModel() override;
-    virtual AbstractModel *playlistContents(const QString &pls) override;
+    virtual AbstractModel *playlistContents(int plsID) override;
     virtual void seek(int pos) override;
     virtual void setMedia(const QString &path) override;
     virtual void addAlbum(const QString &album) override;

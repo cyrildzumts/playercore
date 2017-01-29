@@ -124,6 +124,7 @@ public Q_SLOTS:
     void filterByGenre(const QString &genre);
     void filterByArtist(const QString &artist);
     void filterRecent(int day_limit);
+    void setDefault();
     virtual void viewContent();
 protected:
     virtual void init() override;
@@ -213,6 +214,17 @@ private:
 
 public slots:
 
+};
+
+class PlaylistModel : public AbstractModel
+{
+    Q_OBJECT
+public:
+    PlaylistModel(AbstractDataAccessObject  *data_access = nullptr);
+    ~PlaylistModel();
+    // AbstractModel interface
+protected:
+    virtual void init() override;
 };
 
 #endif // ABSTRACTMODEL_H

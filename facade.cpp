@@ -24,10 +24,16 @@ PlayerFacade::PlayerFacade(const QString &conf)
     player = new Player();
     player->setPlaylist(playlist);
     albums = new AlbumModel(data_access_object);
+    artists = new ArtistModel(data_access_object);
+    artistAlbums = new AlbumModel(data_access_object);
+    search_result = new AlbumModel(data_access_object);
+    plsContents = new TracklistModel(data_access_object);
+    albumContent = new TracklistModel(data_access_object);
     genres = new GenreModel(data_access_object);
     tracklists = new TracklistModel(data_access_object);
-    playlists = nullptr;
-    search_result = nullptr;
+    playlists = new PlaylistModel(data_access_object);
+
+    //search_result = nullptr;
 
 
     init();
@@ -66,6 +72,10 @@ PlayerFacade::~PlayerFacade()
 
     delete data_access_object;
     delete settings;
+    delete artistAlbums;
+    delete search_result;
+    delete plsContents;
+    delete albumContent;
     qDebug() << __PRETTY_FUNCTION__ << " deleted ...";
 
 
@@ -85,8 +95,10 @@ void PlayerFacade::init()
     player->setPlaylist(playlist);
     player->setPosition(position);
     playlist->setCurrentIndex(index);
+    artists->populate();
+    playlists->populate();
     //albums->test_queries();
-    albums->populate();
+    static_cast<AlbumModel*>(albums)->setDefault();
 //    qDebug() << "Albums Contents :";
 //    albums->viewContent();
     genres->populate();
@@ -129,39 +141,43 @@ AbstractModel *PlayerFacade::albumModel()
 
 AbstractModel *PlayerFacade::albumContentModel(const QString &albumTitle)
 {
-    tracklists->setQuery(albumTitle);
-    return tracklists;
+    static_cast<TracklistModel*>(albumContent)->populateFromAlbum(albumTitle);
+    return albumContent;
 }
 
 AbstractModel *PlayerFacade::artistModel()
 {
+    return artists;
 }
 
 AbstractModel *PlayerFacade::albumByGenre(const QString &genreName)
 {
-    static_cast<AlbumModel>(albums).filterByGenre(genreName);
+    static_cast<AlbumModel*>(albums)->filterByGenre(genreName);
     return albums;
 }
 
 AbstractModel *PlayerFacade::artistAlbumModel(const QString &artistName)
 {
-    static_cast<AlbumModel>(albums).filterByArtist(artistName);
+    static_cast<AlbumModel*>(artistAlbums)->filterByArtist(artistName);
     return albums;
 }
 
 AbstractModel *PlayerFacade::recentAlbumsModel()
 {
-    static_cast<AlbumModel>(albums).filterRecent(3);
+    static_cast<AlbumModel*>(albums)->filterRecent(3);
     return albums;
 }
 
-AbstractModel *PlayerFacade::playlistContents(const QString &pls)
+AbstractModel *PlayerFacade::playlistContents(int plsID)
 {
+    static_cast<TracklistModel*>(plsContents)->populateFromPlaylist(plsID);
+    return plsContents;
 }
 
 
 AbstractModel *PlayerFacade::tracklistModel()
 {
+    static_cast<TracklistModel*>(tracklists)->setDefault();
     return tracklists;
 }
 
@@ -594,7 +610,7 @@ AbstractModel *FacadeStubs::recentAlbumsModel()
 {
 }
 
-AbstractModel *FacadeStubs::playlistContents(const QString &pls)
+AbstractModel *FacadeStubs::playlistContents(int plsID)
 {
 }
 

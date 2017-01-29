@@ -98,7 +98,7 @@ void AbstractModel::setQuery(QSqlQuery &query)
 
 void AbstractModel::setQuery(const QString &str)
 {
-    if(queryStr != str)
+    if( !str.isEmpty() && (queryStr != str) )
     {
         queryStr = str;
         refresh();
@@ -221,16 +221,7 @@ AlbumModel::~AlbumModel()
 
 void AlbumModel::init()
 {
-    queryStr = QString("SELECT albumTitle as title,albumArtist as artist,"
-                       "genre,cover as coverpath,"
-                       "COUNT(albumTitle) as tracks ,SUM(length) as duration , "
-                       "year, genre FROM BaseTableTracks "
-                       "GROUP BY albumTitle "
-                       "ORDER BY albumTitle;");
-
-
     _roles = AbstractModel::albumRoles();
-
 }
 
 
@@ -334,6 +325,19 @@ void AlbumModel::filterRecent(int day_limit)
                            "GROUP BY albumTitle "
                            "ORDER BY albumTitle;").arg(QString::number(recent_date));
     setQuery(cmd);
+}
+
+void AlbumModel::setDefault()
+{
+    QString cmd = QString("SELECT albumTitle as title,albumArtist as artist,"
+                       "genre,cover as coverpath,"
+                       "COUNT(albumTitle) as tracks ,SUM(length) as duration , "
+                       "year, genre FROM BaseTableTracks "
+                       "GROUP BY albumTitle "
+                       "ORDER BY albumTitle;");
+
+    setQuery(cmd);
+
 }
 
 
@@ -447,3 +451,16 @@ void GenreModel::init()
 }
 
 
+PlaylistModel::PlaylistModel(AbstractDataAccessObject *data_access)
+{
+    queryStr = QString("SELECT * FROM Playlist;");
+}
+
+PlaylistModel::~PlaylistModel()
+{
+    _query.clear();
+}
+
+void PlaylistModel::init()
+{
+}

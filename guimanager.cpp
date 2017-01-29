@@ -111,9 +111,9 @@ AbstractModel *GUIManager::playlistModel()
     return facade->playlistModel();
 }
 
-AbstractModel *GUIManager::playlistContent(const QString &pls)
+AbstractModel *GUIManager::playlistContent(int plsID)
 {
-    return facade->playlistContents(pls);
+    return facade->playlistContents(plsID);
 }
 
 //TODO
