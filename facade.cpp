@@ -139,14 +139,20 @@ AbstractModel *PlayerFacade::artistModel()
 
 AbstractModel *PlayerFacade::albumByGenre(const QString &genreName)
 {
+    static_cast<AlbumModel>(albums).filterByGenre(genreName);
+    return albums;
 }
 
 AbstractModel *PlayerFacade::artistAlbumModel(const QString &artistName)
 {
+    static_cast<AlbumModel>(albums).filterByArtist(artistName);
+    return albums;
 }
 
 AbstractModel *PlayerFacade::recentAlbumsModel()
 {
+    static_cast<AlbumModel>(albums).filterRecent(3);
+    return albums;
 }
 
 AbstractModel *PlayerFacade::playlistContents(const QString &pls)
