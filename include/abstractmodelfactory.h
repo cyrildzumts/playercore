@@ -6,7 +6,8 @@
 class AbstractModelFactory
 {
 public:
-    virtual ~AbstractModelFactory(){}
+    virtual ~AbstractModelFactory();
+    static AbstractModelFactory *instance();
     AbstractModel *createModel(const QString &cmd) ;
     AbstractModel *createAlbumModel();
     AbstractModel *createPlaylistModel();
@@ -16,8 +17,9 @@ public:
     AbstractModel *createByGenreModel(const QString& genre);
 public:
 
-
-
+private:
+    AbstractModelFactory();
+    static AbstractModelFactory* _instance;
 };
 
 #endif // ABSTRACTMODELFACTORY_H
