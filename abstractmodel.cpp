@@ -155,6 +155,15 @@ QHash<int, QByteArray> AbstractModel::genreRoles()
     return roles;
 }
 
+QHash<int, QByteArray> AbstractModel::playlistRoles()
+{
+    QHash<int, QByteArray> roles;
+    roles[PlaylistRole::PLSTITLE]       = "title";
+    roles[PlaylistRole::PLAYLISTID]     = "playlistID";
+    roles[PlaylistRole::PLSFAVORITE]    = "favorite";
+    return roles;
+}
+
 QHash<int, QByteArray> AbstractModel::trackRoles()
 {
     QHash<int, QByteArray> roles;
@@ -453,11 +462,14 @@ void GenreModel::init()
 
 PlaylistModel::PlaylistModel(AbstractDataAccessObject *data_access)
 {
+    this->data_access = data_access;
     queryStr = QString("SELECT * FROM Playlist;");
+    _roles = playlistRoles();
 }
 
 PlaylistModel::~PlaylistModel()
 {
+    qDebug() << __PRETTY_FUNCTION__ << " called ...";
     _query.clear();
 }
 

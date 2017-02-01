@@ -57,6 +57,13 @@ enum GenreRole
     GenreName
 };
 
+enum PlaylistRole
+{
+    PLAYLISTID = UserRole + 1,
+    PLSTITLE,
+    PLSFAVORITE
+};
+
 class AbstractModel : public QAbstractListModel
 {
     Q_OBJECT
@@ -81,6 +88,7 @@ public:
     static QHash<int, QByteArray> artistRoles();
     static QHash<int, QByteArray> trackRoles();
     static QHash<int, QByteArray> genreRoles();
+    static QHash<int, QByteArray> playlistRoles();
 //    static AbstractModel* albumModel();
 //    static AbstractModel* genreModel();
 //    static AbstractModel* traclistModel();

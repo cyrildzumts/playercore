@@ -99,6 +99,7 @@ void PlayerFacade::init()
     playlists->populate();
     //albums->test_queries();
     static_cast<AlbumModel*>(albums)->setDefault();
+    static_cast<TracklistModel*>(tracklists)->setDefault();
 //    qDebug() << "Albums Contents :";
 //    albums->viewContent();
     genres->populate();
@@ -177,7 +178,7 @@ AbstractModel *PlayerFacade::playlistContents(int plsID)
 
 AbstractModel *PlayerFacade::tracklistModel()
 {
-    static_cast<TracklistModel*>(tracklists)->setDefault();
+
     return tracklists;
 }
 
