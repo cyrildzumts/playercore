@@ -60,6 +60,7 @@ PlayerFacade::~PlayerFacade()
     qDebug() << __PRETTY_FUNCTION__ << " application states saved";
 
 
+    disconnect(player, &Player::stateChanged, this, &PlayerFacade::playerStateChanged);
     //delete Busmanager;
     delete playlistManager;
     delete player;
@@ -90,11 +91,13 @@ void PlayerFacade::init()
     QString mediaSourcePath = settings->getMediaSourcePath();
     mediascanner->init(mediaSourcePath);
     mediascanner->scanSourceDirectory();
+    // populate the current playlist
     playlist->setTracklist(ids);
     playlist->setPlaybackMode(mode);
     player->setPlaylist(playlist);
     player->setPosition(position);
     playlist->setCurrentIndex(index);
+
     artists->populate();
     playlists->populate();
     //albums->test_queries();
@@ -109,16 +112,25 @@ void PlayerFacade::init()
 //    qDebug() << "Genres Contents :";
 //    genres->viewContent();
 
+    connect(player, &Player::stateChanged, this, &PlayerFacade::playerStateChanged);
+    connect(player, &Player::durationChanged, this, &Facade::lengthChanged);
+    connect(player, &Player::positionChanged, this, &Facade::positionChanged);
+    connect(playlist, &Playlist2::durationChanged, this, &Facade::durationChanged);
+
 }
 
 void PlayerFacade::update()
 {
     mediascanner->updateData();
 }
-
+void PlayerFacade::playPlaylist(const QString &title, int index)
+{
+    std::cout << "Not implemented yet ..." << std::endl;
+}
 
 void PlayerFacade::playAlbum(const QString &album, int index)
 {
+    playlist->clear();
     playlist->addAlbum(album);
     playlist->setCurrentIndex(index);
     player->setMedia(playlist->media());
@@ -342,6 +354,7 @@ void PlayerFacade::removeFromPlaylist(const QString &pls, int trackID)
 
 void PlayerFacade::seek(int pos)
 {
+    //qDebug() << __PRETTY_FUNCTION__ << "Seek position to " << pos;
     player->setPosition(pos);
 }
 
@@ -365,7 +378,10 @@ void PlayerFacade::sendNotify(const QString &summary, const QString &body, const
     Busmanager->setNotification(summary, body, icon);
 }
 
-
+QMediaPlayer::State PlayerFacade::playerState()
+{
+    return player->state();
+}
 
 
 
@@ -630,3 +646,11 @@ void FacadeStubs::addAlbum(const QString &album)
 int FacadeStubs::bitrate()
 {
 }
+
+
+void FacadeStubs::playPlaylist(const QString &title, int index)
+{
+}
+
+
+

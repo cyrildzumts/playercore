@@ -263,6 +263,7 @@ void Playlist::addMedia(Track track)
     beginInsertRows(QModelIndex(), rowCount(),rowCount());
     _tracks.push_back(track);
     endInsertRows();
+    Q_EMIT(durationChanged());
 }
 
 void Playlist::addAlbum(const QString &album)
@@ -346,6 +347,7 @@ void Playlist::insertMedia(int pos, Track track)
         beginInsertRows(QModelIndex(),pos,pos);
         _tracks.insert(_tracks.begin() + pos, track);
         endInsertRows();
+        Q_EMIT(durationChanged());
     }
 
 }
@@ -423,6 +425,7 @@ bool Playlist::removeMedia(int pos)
             else _currentIndex = -1;
 
             removed = true;
+            Q_EMIT(durationChanged());
         }
     return removed;
 }

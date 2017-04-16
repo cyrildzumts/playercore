@@ -2,7 +2,7 @@
 #define PLAYER_H
 
 //#include <QMediaPlayer>
-#include <QtMultimedia>
+#include <QtMultimedia/QMediaPlayer>
 #include <memory>
 #include "playlists.h"
 

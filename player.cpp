@@ -23,7 +23,8 @@ Player::~Player()
 
 void Player::updateCurrentMedia(QMediaPlayer::MediaStatus status)
 {
-    if(status == (MediaStatus::NoMedia || MediaStatus::EndOfMedia))
+    qDebug() << "media status changed to " << status;
+    if((status == MediaStatus::NoMedia) ||(status == MediaStatus::EndOfMedia))
     {
         playlist->next();
     }
@@ -43,6 +44,7 @@ void Player::setMedia(QString path)
         QMediaPlayer::setMedia(QUrl::fromLocalFile(path));
         if(wasPlaying)
             play();
+
     }
 }
 

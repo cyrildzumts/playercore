@@ -15,8 +15,14 @@ class Facade : public QObject
 public:
     virtual ~Facade(){}
     virtual void update() = 0;
+    /**
+     * @brief playAlbum Play the album starting from position <index>
+     * @param album The album to be played
+     * @param index the positon from where to start playing
+     */
 
     virtual void playAlbum(const QString &album, int index = 0) = 0;
+    virtual void playPlaylist(const QString &title, int index = 0) = 0;
 
     // Playlist Manager Interface
     /**
@@ -70,22 +76,62 @@ public:
     virtual void seek(int pos) = 0;
     virtual void setMedia(const QString& path) = 0;
     virtual int currentPosition() = 0;
+    virtual QMediaPlayer::State playerState() = 0;
 
-    // Playlist  Intercae
+    // Playlist  Intercae : This controls the current Playlist
+    /**
+     * @brief addTrack Adds a track into the current Playlist
+     * @param ID the ID(database primary key) of the track to tbe added.
+     */
     virtual void addTrack(int ID) = 0;
+    /**
+     * @brief addAlbum Add an Album into the current Playlist
+     * @param album The title of the album to be added.
+     */
     virtual void addAlbum(const QString& album) = 0;
+    /**
+     * @brief removeTrack Remove a track from the current Playlist
+     * @param pos the index of the track to be removed
+     */
     virtual void removeTrack(int pos) = 0;
+    /**
+     * @brief next  Changes to the next track.
+     */
     virtual void next() = 0;
+    /**
+     * @brief previous Changes the previous track
+     */
     virtual void previous() = 0;
+    /**
+     * @brief setPlaybackMode Change the current playback mode
+     * @param mode The new playback mode to be set
+     */
     virtual void setPlaybackMode(int mode) = 0;
+    /**
+     * @brief playbackMode
+     * @return The current playback mode
+     */
     virtual int playbackMode()const = 0;
+    /**
+     * @brief currentIndex
+     * @return The index of the current track being played
+     */
     virtual int currentIndex()const = 0;
+    /**
+     * @brief setCurrentIndex Changes the current index of the current playlist.
+     * This will advance the current index to the new index
+     * @param index The new index of the track to be played
+     */
     virtual void setCurrentIndex(int index) = 0;
+    /**
+     * @brief mediacount
+     * @return The number of tracks contained into the current Playlist
+     */
     virtual int mediacount()const = 0;
     /**
      * @brief duration
      * @return the duration of the total Tracks.
-     * If the playlist is empty, its return 0
+     * If the playlist is empty, it returns 0
      */
     virtual int duration()const = 0;
 
@@ -100,10 +146,10 @@ public:
 
     /**
      * @brief length
-     * @return the duration of the total Tracks.
-     * If the playlist is empty, its return 0
+     * @return the duration of the current track being played.
+     * If the playlist is empty, it returns 0
      */
-    virtual int length()const = 0;
+    virtual int length() const = 0;
 
     /**
      * @brief lengthStr
@@ -150,6 +196,15 @@ public:
     virtual QString author()const = 0;
     virtual QString appName()const = 0;
     virtual QString version() const = 0;
+
+
+
+    // SIGNAL Emited from Components
+Q_SIGNALS:
+    void playerStateChanged();
+    void positionChanged(int pos);
+    void durationChanged();
+    void lengthChanged(int len);
 
 };
 
@@ -224,6 +279,9 @@ public:
 
 private:
     AbstractDataAccessObject *data_access_object;
+    /**
+     * @brief playlist the current playlist
+     */
     Playlist2 *playlist;
     Player *player;
     AbstractModel *albums;
@@ -251,6 +309,14 @@ public:
     virtual AbstractModel *artistAlbumModel(const QString &artistName) override;
     virtual AbstractModel *recentAlbumsModel() override;
     virtual AbstractModel *playlistContents(int plsID) override;
+
+    // Facade interface
+public:
+    virtual void playPlaylist(const QString &title, int index) override;
+
+    // Facade interface
+public:
+    virtual QMediaPlayer::State playerState() override;
 };
 
 class FacadeStubs : public Facade
@@ -315,6 +381,10 @@ public:
     virtual void setMedia(const QString &path) override;
     virtual void addAlbum(const QString &album) override;
     virtual int bitrate() override;
+
+    // Facade interface
+public:
+    virtual void playPlaylist(const QString &title, int index) override;
 };
 
 #endif // FACADE_H

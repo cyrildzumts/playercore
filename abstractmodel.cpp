@@ -101,7 +101,7 @@ void AbstractModel::setQuery(const QString &str)
     if( !str.isEmpty() && (queryStr != str) )
     {
         queryStr = str;
-        refresh();
+        populate();
         Q_EMIT queryChanged();
     }
 }

@@ -3,6 +3,16 @@
 GUIManager::GUIManager()
 {
     facade = new PlayerFacade(QString());
+    qDebug() << __PRETTY_FUNCTION__;
+    qDebug() << "Facade states : ";
+    qDebug() << "Playlist Playback mode : " << facade->playbackMode();
+    qDebug() << "Player State : " << facade->playerState();
+    connect(facade, &PlayerFacade::playerStateChanged, this, &GUIManager::isPlayingChanged);
+    connect(facade, &Facade::positionChanged, this, &GUIManager::positionChanged);
+    connect(facade, &Facade::positionChanged, this, &GUIManager::positionStrChanged);
+    connect(facade, &Facade::durationChanged, this, &GUIManager::durationChanged);
+    connect(facade, &Facade::lengthChanged, this, &GUIManager::lengthChanged);
+    connect(facade, &Facade::lengthChanged, this, &GUIManager::lengthStrChanged);
 }
 
 GUIManager::~GUIManager()
@@ -14,7 +24,10 @@ GUIManager::~GUIManager()
 // Player Interface
 void GUIManager::play()
 {
-    facade->play();
+    if(isPlaying())
+        facade->pause();
+    else
+        facade->play();
 }
 
 void GUIManager::next()
@@ -32,35 +45,50 @@ int GUIManager::position()
     return facade->currentPosition();
 }
 
-// TODO
+
 void GUIManager::setPosition(int position)
 {
     facade->seek(position);
 }
 
-// TODO
+
 
 QString GUIManager::positionStr()
 {
+    QTime tmpTime (0,0);
+    static int d = 0;
+    d = position();
+    QTime t =  tmpTime.addSecs(d);
+    if(d < HOUR_IN_SECONDS)
+    {
+       return  t.toString("mm:ss");
+    }
+    else
+    {
+       return t.toString("hh:mm:ss");
+    }
     return "";
 }
 
-// TODO
+
 bool GUIManager::isPlaying()
 {
-    return false;
+    auto state = facade->playerState();
+    return state == QMediaPlayer::PlayingState;
 }
 
-// TODO
+
 bool GUIManager::isStopped()
 {
-    return false;
+    auto state = facade->playerState();
+    return state == QMediaPlayer::StoppedState;
 }
 
-//TODO
+
 bool GUIManager::isPaused()
 {
-    return false;
+    auto state = facade->playerState();
+    return state == QMediaPlayer::PausedState;
 }
 
 AbstractModel *GUIManager::tracklistModel()
@@ -116,7 +144,7 @@ AbstractModel *GUIManager::playlistContent(int plsID)
     return facade->playlistContents(plsID);
 }
 
-//TODO
+
 Playlist *GUIManager::now_playingPlaylist()
 {
     return static_cast<Playlist*>(facade->currentPlaylist());
@@ -131,6 +159,30 @@ void GUIManager::onAlbumClicked(const QString &title)
 void GUIManager::onPlayAlbumPressed(const QString &title)
 {
     facade->playAlbum(title);
+}
+
+void GUIManager::playAlbum(const QString &title, int index)
+{
+    facade->playAlbum(title, index);
+}
+
+void GUIManager::playPlaylist(const QString &title, int index)
+{
+
+}
+
+QString GUIManager::durationToString(int d)
+{
+    QTime tmpTime (0,0);
+    QTime t =  tmpTime.addSecs(d);
+    if(d < HOUR_IN_SECONDS)
+    {
+       return  t.toString("mm:ss");
+    }
+    else
+    {
+        return t.toString("hh:mm:ss");
+    }
 }
 
 // Playlist In
@@ -160,6 +212,7 @@ QString GUIManager::cover()
     return facade->cover();
 }
 
+//TODO
 QString GUIManager::genre()
 {
     return "Genre";
@@ -176,7 +229,7 @@ QString GUIManager::durationStr()
 }
 
 
-int GUIManager::length()
+qint64 GUIManager::length()
 {
     return facade->length();
 }
@@ -202,10 +255,9 @@ void GUIManager::setPlaybackMode(int mode)
 }
 
 
-// TODO
 int GUIManager::mediaCount()
 {
-    return 0;
+    return facade->mediacount();
 }
 
 void GUIManager::addTrack(int id)

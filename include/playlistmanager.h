@@ -7,14 +7,57 @@ class IPlaylistManager
 {
 public:
     virtual ~IPlaylistManager(){}
+    /**
+     * @brief setDataAccessObject
+     * @param data_acces
+     */
     virtual void setDataAccessObject(AbstractDataAccessObject* data_acces) = 0;
+    /**
+     * @brief createPlaylist
+     * @param title
+     * @return
+     */
     virtual int createPlaylist(const QString& title) = 0;
+    /**
+     * @brief removePlaylist
+     * @param playlistID
+     * @return
+     */
     virtual bool removePlaylist(int playlistID) = 0;
+    /**
+     * @brief addToPlaylist
+     * @param playlistID
+     * @param trackID
+     * @return
+     */
     virtual bool addToPlaylist(int playlistID, int trackID) = 0;
+    /**
+     * @brief removeFromPlaylist
+     * @param playlistID
+     * @param trackID
+     * @return
+     */
     virtual bool removeFromPlaylist(int playlistID, int trackID) = 0;
+    /**
+     * @brief removePlaylist
+     * @param pls
+     * @return
+     */
 
     virtual bool removePlaylist(const QString& pls) = 0;
+    /**
+     * @brief addToPlaylist
+     * @param pls
+     * @param trackID
+     * @return
+     */
     virtual bool addToPlaylist(const QString& pls, int trackID) = 0;
+    /**
+     * @brief removeFromPlaylist
+     * @param pls
+     * @param trackID
+     * @return
+     */
     virtual bool removeFromPlaylist(const QString& pls, int trackID) = 0;
 };
 

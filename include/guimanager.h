@@ -11,22 +11,27 @@
  * it responds to every signal and user request
  * from the UI
  */
+
+#define  HOUR_IN_MILLISECONDS  ((uint)(3600000)) // Hour in Milliseconds
+#define  HOUR_IN_SECONDS  ((uint)(3600)) // Hour in Seconds
 class GUIManager : public QQuickItem
 {
     Q_OBJECT
 
-    Q_PROPERTY(bool isPlaying READ isPlaying)
+    Q_PROPERTY(bool isPlaying READ isPlaying NOTIFY isPlayingChanged)
     Q_PROPERTY(bool isPaused READ isPaused)
     Q_PROPERTY(int position READ position WRITE setPosition NOTIFY positionChanged)
-    //Q_PROPERTY(QString positionStr READ positionStr WRITE setPositionStr NOTIFY positionStrChanged)
+    Q_PROPERTY(int duration READ duration  NOTIFY durationChanged)
+   Q_PROPERTY(QString positionStr READ positionStr NOTIFY positionStrChanged)
     Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged)
     Q_PROPERTY(QString title READ title)
     Q_PROPERTY(QString album READ album )
     Q_PROPERTY(QString genre READ genre )
     Q_PROPERTY(QString artist READ artist)
     Q_PROPERTY(QString cover READ cover)
-    Q_PROPERTY(QString duration READ durationStr)
-    Q_PROPERTY(QString length READ lengthStr)
+    Q_PROPERTY(QString durationStr READ durationStr)
+    Q_PROPERTY(QString lengthStr READ lengthStr)
+    Q_PROPERTY(qint64 length READ length NOTIFY lengthChanged)
     Q_PROPERTY(int playbackMode READ playbackMode WRITE setPlaybackMode NOTIFY playbackModeChanged)
     Q_PROPERTY(int mediaCount READ mediaCount )
 
@@ -63,8 +68,17 @@ public Q_SLOTS:
     // tracklist model object
     virtual void onAlbumClicked(const QString &title);
     virtual void onPlayAlbumPressed(const QString &title);
+    virtual void playAlbum(const QString& title, int index);
+    virtual void playPlaylist(const QString& title, int index);
 
     // Playlist In
+    /**
+     * @brief durationToString convert a duration (time in milliseconds)
+     * into a string representation.
+     * @param d The time duration in millisecond
+     * @return the duration in string format.
+     */
+    virtual QString durationToString(int d);
     virtual void setCurrentIndex(int index);
     virtual QString title();
     virtual QString album();
@@ -73,7 +87,7 @@ public Q_SLOTS:
     virtual QString genre();
     virtual int duration();
     virtual QString durationStr();
-    virtual int length();
+    virtual qint64 length();
     virtual QString lengthStr();
     virtual int currentIndex();
     virtual int playbackMode();
@@ -103,6 +117,11 @@ Q_SIGNALS:
     void currentIndexChanged(int index);
     void playbackModeChanged(int mode);
     void positionChanged(int position);
+    void positionStrChanged(int position);
+    void durationChanged();
+    void lengthChanged(int len);
+    void lengthStrChanged();
+    void isPlayingChanged();
 
 public:
 
