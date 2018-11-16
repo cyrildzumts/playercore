@@ -102,6 +102,7 @@ public Q_SLOTS:
     virtual int bitrate()const ;
     virtual int favorite() const;
     virtual int addToFavorite(int trackID);
+    virtual int removeFromFavorite(int trackID);
 
     /**
      * @brief tracklist
@@ -258,6 +259,10 @@ public Q_SLOTS:
      * @brief shuffle set the PlaybackMode to Random
      */
     virtual void shuffle();
+    virtual void repeatModeOnce(){}
+    virtual void repeatModeSeq(){}
+    virtual void repeatModeLoop(){}
+    virtual void repeatModeOneLoop(){}
 
     virtual void setRoles(const QHash<int, QByteArray> &roles);
     // QAbstractlistModel Overwriting :
@@ -336,6 +341,7 @@ protected:
     QSqlQuery _query;
     QString _currentMedia;
     AbstractDataAccessObject *data_access;
+    int playbackMode_backup;
 
 
 public slots:
@@ -348,13 +354,14 @@ class PlaylistState;
 
 class Playlist2 : public Playlist
 {
+    Q_OBJECT
 public:
      explicit Playlist2(AbstractDataAccessObject *data_access);
     virtual ~Playlist2();
-    virtual void next();
-    virtual void previous();
-    virtual void setPlaybackMode(int mode);
-    virtual int playbackMode()const;
+    virtual void next() override;
+    virtual void previous() override;
+    virtual void setPlaybackMode(int mode) override;
+    virtual int playbackMode()const override;
 
 private:
     void changeState(PlaylistState *state);
@@ -369,6 +376,13 @@ private:
     friend class RandomState;
     PlaylistState * state;
 
+
+    // Playlist interface
+public slots:
+    virtual void repeatModeOnce() override;
+    virtual void repeatModeSeq() override;
+    virtual void repeatModeLoop() override;
+    virtual void repeatModeOneLoop() override;
 };
 
 

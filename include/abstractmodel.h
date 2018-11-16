@@ -133,7 +133,7 @@ public Q_SLOTS:
     void filterByArtist(const QString &artist);
     void filterRecent(int day_limit);
     void setDefault();
-    virtual void viewContent();
+    virtual void viewContent() override;
 protected:
     virtual void init() override;
 private:

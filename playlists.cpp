@@ -191,6 +191,13 @@ int Playlist::addToFavorite(int trackID)
     return query.lastError().isValid() ? 1 : 0 ;
 }
 
+int Playlist::removeFromFavorite(int trackID)
+{
+    auto query = data_access->query(QString("UPDATE BaseTableTracks SET favorite = 0 WHERE trackID = %1").arg(QString::number(trackID)));
+
+    return query.lastError().isValid() ? 1 : 0 ;
+}
+
 QString Playlist::title()const
 {
     QString str = "";
@@ -581,14 +588,16 @@ void Playlist::shuffle()
     switch(_playbackMode)
     {
         case PlaybackMode::Random:
+
             _currentIndex = _randomCurrentIndex;
-            setPlaybackMode( PlaybackMode::Sequential);
+            setPlaybackMode( playbackMode_backup);
             break;
 
         default:
         {
             randomIndices = RandomGenerator::Instance()->getShuffleList(_tracks.size());
             _randomCurrentIndex = 0;
+            playbackMode_backup = _playbackMode;
             setPlaybackMode( PlaybackMode::Random);
             break;
         }
@@ -1028,4 +1037,26 @@ void CurrentItemInLoopState::previous(Playlist2 *pls)
     {
        pls->setCurrentIndex(pls->currentIndex() - 1);
     }
+}
+
+
+void Playlist2::repeatModeOnce()
+{
+    changeState(CurrentItemOnceState::instance());
+}
+
+void Playlist2::repeatModeSeq()
+{
+    changeState(SequentialState::instance());
+}
+
+void Playlist2::repeatModeLoop()
+{
+    changeState(LoopState::instance());
+}
+
+
+void Playlist2::repeatModeOneLoop()
+{
+    changeState(CurrentItemInLoopState::instance());
 }

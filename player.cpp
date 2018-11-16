@@ -61,32 +61,41 @@ QString Player::cover()const
 
 QString Player::positionString()const
 {
-        int d = position();
+
+        int d = static_cast<int>(position());
+        QString result = "";
         QTime tmpTime (0,0);
-        QTime t =  tmpTime.addMSecs(d);
-        if(d < HOUR)
-        {
-           return  t.toString("mm:ss");
+        if(!currentMedia().isNull()){
+            QTime t =  tmpTime.addMSecs(d);
+            if(d < HOUR)
+            {
+                result =  t.toString("mm:ss");
+            }
+            else
+            {
+                result = t.toString("hh:mm:ss");
+            }
         }
-        else
-        {
-            return t.toString("hh:mm:ss");
-        }
+        return result;
 }
 
 QString Player::durationString()const
 {
-        int d = duration();
+        int d = static_cast<int>(duration());
+        QString result = "";
         QTime tmpTime (0,0);
-        QTime t =  tmpTime.addMSecs(d);
-        if(d < HOUR)
-        {
-            return  t.toString("mm:ss");
+        if(!currentMedia().isNull()){
+            QTime t =  tmpTime.addMSecs(d);
+            if(d < HOUR)
+            {
+                result =  t.toString("mm:ss");
+            }
+            else
+            {
+                result = t.toString("hh:mm:ss");
+            }
         }
-        else
-        {
-            return t.toString("hh:mm:ss");
-        }
+        return result;
 }
 
 void Player::setPlaylist(Playlist2 *_playlist)

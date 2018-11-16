@@ -13,6 +13,11 @@ GUIManager::GUIManager()
     connect(facade, &Facade::durationChanged, this, &GUIManager::durationChanged);
     connect(facade, &Facade::lengthChanged, this, &GUIManager::lengthChanged);
     connect(facade, &Facade::lengthChanged, this, &GUIManager::lengthStrChanged);
+    connect(facade, &Facade::lengthChanged, this, &GUIManager::coverChanged);
+    connect(facade, &Facade::lengthChanged, this, &GUIManager::durationStrChanged);
+    connect(facade, &Facade::durationChanged, this, &GUIManager::albumChanged);
+    connect(facade, &Facade::lengthChanged, this, &GUIManager::artistChanged);
+    connect(facade, &Facade::lengthChanged, this, &GUIManager::titleChanged);
 }
 
 GUIManager::~GUIManager()
@@ -55,19 +60,8 @@ void GUIManager::setPosition(int position)
 
 QString GUIManager::positionStr()
 {
-    QTime tmpTime (0,0);
-    static int d = 0;
-    d = position();
-    QTime t =  tmpTime.addSecs(d);
-    if(d < HOUR_IN_SECONDS)
-    {
-       return  t.toString("mm:ss");
-    }
-    else
-    {
-       return t.toString("hh:mm:ss");
-    }
-    return "";
+    return facade->positionStr();
+
 }
 
 
@@ -171,6 +165,11 @@ void GUIManager::playPlaylist(const QString &title, int index)
 
 }
 
+int GUIManager::favorite()
+{
+    return facade->currentTrackFavorite();
+}
+
 QString GUIManager::durationToString(int d)
 {
     QTime tmpTime (0,0);
@@ -251,7 +250,23 @@ int GUIManager::playbackMode()
 
 void GUIManager::setPlaybackMode(int mode)
 {
-    facade->setPlaybackMode(mode);
+    //facade->setPlaybackMode(mode);
+
+    switch (mode) {
+        case PlaybackMode::CurrentItemOnce:
+            repeatModeOnce();
+            break;
+        case PlaybackMode::CurrentItemInLoop:
+            repeatModeOneLoop();
+            break;
+        case PlaybackMode::Loop:
+            repeatModeLoop();
+            break;
+        case PlaybackMode::Sequential:
+            repeatModeSeq();
+            break;
+
+    }
 }
 
 
@@ -320,6 +335,52 @@ bool GUIManager::addToPlaylist(const QString &pls, int trackID)
 {
     facade->addToPlaylist(pls, trackID);
     return true;
+}
+
+void GUIManager::addCurrentTrackToFavorite()
+{
+    facade->addCurrentTrackToFavorite();
+}
+
+void GUIManager::removeCurrentTrackFromFavorite()
+{
+    facade->removeCurrentTrackFromFavorite();
+}
+
+void GUIManager::addToFavorite(int trackID)
+{
+    facade->addToFavorite(trackID);
+}
+
+void GUIManager::removeFromFavorite(int trackID)
+{
+    facade->removeFromFavorite(trackID);
+}
+
+void GUIManager::shuffle()
+{
+    std::cout << __FUNCTION__ << "Called on shuffle" << std::endl;
+    facade->shuffle();
+}
+
+void GUIManager::repeatModeOnce()
+{
+    facade->repeatModeOnce();
+}
+
+void GUIManager::repeatModeSeq()
+{
+    facade->repeatModeSeq();
+}
+
+void GUIManager::repeatModeLoop()
+{
+    facade->repeatModeLoop();
+}
+
+void GUIManager::repeatModeOneLoop()
+{
+    facade->repeatModeOneLoop();
 }
 
 

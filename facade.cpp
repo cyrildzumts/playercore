@@ -323,7 +323,7 @@ int PlayerFacade::mediacount() const
 
 int PlayerFacade::length() const
 {
-    return player->duration();
+    return static_cast<int>(player->duration());
 }
 
 QString PlayerFacade::lengthStr() const
@@ -601,22 +601,27 @@ void FacadeStubs::removePlaylist(const QString &pls)
 
 void FacadeStubs::removeFromPlaylist(const QString &pls, int trackID)
 {
+
 }
 
 AbstractModel *FacadeStubs::genreModel()
 {
+    return nullptr;
 }
 
 AbstractModel *FacadeStubs::albumContentModel(const QString &albumTitle)
 {
+    return nullptr;
 }
 
 AbstractModel *FacadeStubs::artistModel()
 {
+    return nullptr;
 }
 
 AbstractModel *FacadeStubs::albumByGenre(const QString &genreName)
 {
+    return nullptr;
 }
 
 AbstractModel *FacadeStubs::artistAlbumModel(const QString &artistName)
@@ -625,10 +630,12 @@ AbstractModel *FacadeStubs::artistAlbumModel(const QString &artistName)
 
 AbstractModel *FacadeStubs::recentAlbumsModel()
 {
+    return nullptr;
 }
 
 AbstractModel *FacadeStubs::playlistContents(int plsID)
 {
+    return nullptr;
 }
 
 void FacadeStubs::seek(int pos)
@@ -645,6 +652,7 @@ void FacadeStubs::addAlbum(const QString &album)
 
 int FacadeStubs::bitrate()
 {
+    return  0;
 }
 
 
@@ -654,3 +662,143 @@ void FacadeStubs::playPlaylist(const QString &title, int index)
 
 
 
+
+
+void PlayerFacade::shuffle()
+{
+    if(playlist){
+        playlist->shuffle();
+    }
+
+}
+
+void PlayerFacade::shuffleOff()
+{
+    if(playlist){
+        playlist->shuffle();
+    }
+}
+
+void PlayerFacade::repeatModeOnce()
+{
+    if(playlist){
+        playlist->repeatModeOnce();
+    }
+
+}
+
+void PlayerFacade::repeatModeSeq()
+{
+    if(playlist){
+        playlist->repeatModeSeq();
+    }
+}
+
+void PlayerFacade::repeatModeLoop()
+{
+    if(playlist){
+        playlist->repeatModeLoop();
+    }
+}
+
+void PlayerFacade::repeatModeOneLoop()
+{
+    if(playlist){
+        playlist->repeatModeOneLoop();
+    }
+}
+
+QMediaPlayer::State FacadeStubs::playerState()
+{
+}
+
+void FacadeStubs::shuffle()
+{
+}
+
+void FacadeStubs::shuffleOff()
+{
+}
+
+void FacadeStubs::repeatModeOnce()
+{
+}
+
+void FacadeStubs::repeatModeSeq()
+{
+}
+
+void FacadeStubs::repeatModeLoop()
+{
+}
+
+
+
+
+void FacadeStubs::repeatModeOneLoop()
+{
+}
+
+
+QString PlayerFacade::positionStr() const
+{
+    if(player)
+        return player->positionString();
+    return "";
+}
+
+QString FacadeStubs::positionStr() const
+{
+    return "";
+}
+
+
+
+void PlayerFacade::addCurrentTrackToFavorite()
+{
+    int trackID = playlist->currentTrackID();
+    playlist->addToFavorite(trackID);
+}
+
+void PlayerFacade::removeCurrentTrackFromFavorite()
+{
+    playlist->removeFromFavorite(playlist->currentTrackID());
+}
+
+void PlayerFacade::addToFavorite(int trackID)
+{
+
+    playlist->addToFavorite(trackID);
+}
+
+void PlayerFacade::removeFromFavorite(int trackID)
+{
+    playlist->removeFromFavorite(trackID);
+}
+
+void FacadeStubs::addCurrentTrackToFavorite()
+{
+}
+
+void FacadeStubs::removeCurrentTrackFromFavorite()
+{
+}
+
+void FacadeStubs::addToFavorite(int trackID)
+{
+}
+
+void FacadeStubs::removeFromFavorite(int trackID)
+{
+}
+
+
+int PlayerFacade::currentTrackFavorite()
+{
+    return playlist->favorite();
+}
+
+int FacadeStubs::currentTrackFavorite()
+{
+    return 0;
+}

@@ -81,8 +81,6 @@ public:
     DataAccessObject(const QString &path);
     ~DataAccessObject();
 
-
-
     // AbstractDataAccessObject interface
 public:
     virtual QSqlQuery queryTrack(const QString& title) override;

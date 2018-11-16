@@ -20,7 +20,7 @@ public:
      * @param album The album to be played
      * @param index the positon from where to start playing
      */
-
+    virtual int currentTrackFavorite() = 0;
     virtual void playAlbum(const QString &album, int index = 0) = 0;
     virtual void playPlaylist(const QString &title, int index = 0) = 0;
 
@@ -107,6 +107,17 @@ public:
      * @param mode The new playback mode to be set
      */
     virtual void setPlaybackMode(int mode) = 0;
+
+    virtual void shuffle() = 0;
+    virtual void shuffleOff() = 0;
+    virtual void repeatModeOnce() = 0;
+    virtual void repeatModeOneLoop() = 0;
+    virtual void repeatModeSeq() = 0;
+    virtual void repeatModeLoop() = 0;
+    virtual void addCurrentTrackToFavorite() = 0;
+    virtual void removeCurrentTrackFromFavorite() = 0;
+    virtual void addToFavorite(int trackID) = 0;
+    virtual void removeFromFavorite(int trackID) = 0;
     /**
      * @brief playbackMode
      * @return The current playback mode
@@ -158,6 +169,8 @@ public:
      * playlist is empty
      */
     virtual QString lengthStr() const = 0;
+
+    virtual QString positionStr() const = 0;
     /**
      * @brief setCover set the current Track's Cover path
      * @param path
@@ -263,10 +276,7 @@ public:
 
     // Facade interface
 public:
-    virtual void createPlaylist(const QString &title) override;
-    virtual void addToPlaylist(const QString &pls, int trackID) override;
-    virtual void removePlaylist(const QString &pls) override;
-    virtual void removeFromPlaylist(const QString &pls, int trackID) override;
+
     virtual void seek(int pos) override;
     virtual void setMedia(const QString &path) override;
     virtual void addAlbum(const QString &album) override;
@@ -317,6 +327,31 @@ public:
     // Facade interface
 public:
     virtual QMediaPlayer::State playerState() override;
+
+    // Facade interface
+public:
+    virtual void shuffle() override;
+    virtual void shuffleOff() override;
+    virtual void repeatModeOnce() override;
+    virtual void repeatModeSeq() override;
+    virtual void repeatModeLoop() override;
+    virtual void repeatModeOneLoop() override;
+
+    // Facade interface
+public:
+    virtual QString positionStr() const override;
+
+    // Facade interface
+public:
+    virtual void createPlaylist(const QString &title) override;
+    virtual void addToPlaylist(const QString &pls, int trackID) override;
+    virtual void removePlaylist(const QString &pls) override;
+    virtual void removeFromPlaylist(const QString &pls, int trackID) override;
+    virtual void addCurrentTrackToFavorite() override;
+    virtual void removeCurrentTrackFromFavorite() override;
+    virtual void addToFavorite(int trackID) override;
+    virtual void removeFromFavorite(int trackID) override;
+    virtual int currentTrackFavorite() override;
 };
 
 class FacadeStubs : public Facade
@@ -385,6 +420,32 @@ public:
     // Facade interface
 public:
     virtual void playPlaylist(const QString &title, int index) override;
+
+    // Facade interface
+public:
+    virtual QMediaPlayer::State playerState() override;
+    virtual void shuffle() override;
+    virtual void shuffleOff() override;
+    virtual void repeatModeOnce() override;
+    virtual void repeatModeSeq() override;
+    virtual void repeatModeLoop() override;
+    virtual void repeatModeOneLoop() override;
+
+    // Facade interface
+public:
+    virtual QString positionStr() const override;
+
+
+    // Facade interface
+public:
+    virtual void addCurrentTrackToFavorite() override;
+    virtual void removeCurrentTrackFromFavorite() override;
+    virtual void addToFavorite(int trackID) override;
+    virtual void removeFromFavorite(int trackID) override;
+
+    // Facade interface
+public:
+    virtual int currentTrackFavorite() override;
 };
 
 #endif // FACADE_H

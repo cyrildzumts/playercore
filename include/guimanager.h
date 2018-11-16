@@ -24,16 +24,18 @@ class GUIManager : public QQuickItem
     Q_PROPERTY(int duration READ duration  NOTIFY durationChanged)
    Q_PROPERTY(QString positionStr READ positionStr NOTIFY positionStrChanged)
     Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged)
-    Q_PROPERTY(QString title READ title)
-    Q_PROPERTY(QString album READ album )
-    Q_PROPERTY(QString genre READ genre )
-    Q_PROPERTY(QString artist READ artist)
-    Q_PROPERTY(QString cover READ cover)
-    Q_PROPERTY(QString durationStr READ durationStr)
-    Q_PROPERTY(QString lengthStr READ lengthStr)
+    Q_PROPERTY(QString title READ title NOTIFY titleChanged)
+    Q_PROPERTY(QString album READ album NOTIFY albumChanged )
+    Q_PROPERTY(QString genre READ genre NOTIFY genreChanged)
+    Q_PROPERTY(QString artist READ artist NOTIFY artistChanged)
+    Q_PROPERTY(QString cover READ cover NOTIFY coverChanged)
+    Q_PROPERTY(QString durationStr READ durationStr NOTIFY durationStrChanged)
+    Q_PROPERTY(QString lengthStr READ lengthStr NOTIFY lengthStrChanged)
     Q_PROPERTY(qint64 length READ length NOTIFY lengthChanged)
     Q_PROPERTY(int playbackMode READ playbackMode WRITE setPlaybackMode NOTIFY playbackModeChanged)
     Q_PROPERTY(int mediaCount READ mediaCount )
+    Q_PROPERTY(int favorite READ favorite )
+
 
 public:
     GUIManager();
@@ -78,6 +80,7 @@ public Q_SLOTS:
      * @param d The time duration in millisecond
      * @return the duration in string format.
      */
+    virtual int favorite();
     virtual QString durationToString(int d);
     virtual void setCurrentIndex(int index);
     virtual QString title();
@@ -112,13 +115,29 @@ public Q_SLOTS:
     virtual bool addToPlaylist(const QString& pls, int trackID);
 
 
+    virtual void addCurrentTrackToFavorite();
+    virtual void removeCurrentTrackFromFavorite();
+    virtual void addToFavorite(int trackID);
+    virtual void removeFromFavorite(int trackID);
+    virtual void shuffle() ;
+    virtual void repeatModeOnce() ;
+    virtual void repeatModeSeq() ;
+    virtual void repeatModeLoop() ;
+    virtual void repeatModeOneLoop();
+
 
 Q_SIGNALS:
+    void coverChanged();
+    void titleChanged();
+    void albumChanged();
+    void artistChanged();
+    void genreChanged();
     void currentIndexChanged(int index);
     void playbackModeChanged(int mode);
     void positionChanged(int position);
     void positionStrChanged(int position);
     void durationChanged();
+    void durationStrChanged();
     void lengthChanged(int len);
     void lengthStrChanged();
     void isPlayingChanged();
