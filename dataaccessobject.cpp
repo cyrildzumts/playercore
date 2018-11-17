@@ -74,11 +74,13 @@ DataAccessObject::DataAccessObject(const QString& path)
          qDebug() << __PRETTY_FUNCTION__ << " - "  << __LINE__ <<
                      "Synchronous error : " << _query.lastError().text() ;
     }
+    /*
     if(!_query.exec("PRAGMA journal_mode = MEMORY;"))
     {
          qDebug() << __PRETTY_FUNCTION__ << " - "  << __LINE__ <<
                      "Journal mode error : " << _query.lastError().text() ;
     }
+    */
     //auto add_db = QSqlDatabase::cloneDatabase(database, "ADD");
 //    if(!add_db.open())
 //    {
