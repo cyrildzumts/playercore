@@ -1,6 +1,7 @@
 #ifndef SETTINGMANAGER_H
 #define SETTINGMANAGER_H
 
+#include <QDataStream>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonArray>
@@ -9,8 +10,9 @@
 #include <QFileSystemWatcher>
 #include <QDebug>
 #include <vector>
-
+#include <cstdlib>
 #include <exception>
+#include<algorithm>
 #include <string>
 class InexistentConfigException : public std::exception
 {
@@ -93,6 +95,16 @@ public:
 private:
     QJsonObject getRootObject() const;
     void readJsonDocument(QJsonDocument &doc);
+    QJsonObject createApplicationEntry();
+    QJsonObject createAuthorOject(const QString &email, const QString &name);
+    QJsonObject createPlayerObject();
+    QJsonArray createPlaylistJSONArray();
+    QJsonArray createPlaylistJSONArray(std::vector<int> &tracks);
+    QJsonObject &addJSONObjectToRootObject(QJsonObject& root, const QString &key, const QJsonValue &value);
+    bool createConfigFile();
+    bool configFileExist();
+    bool configFileIsEmpty();
+    void populateConfigFile();
     /**
      * @brief init
      * intialize the Settingscontroller.
@@ -100,6 +112,7 @@ private:
      * to an existing file
      */
     void init();
+    void init2();
 
 protected:
     QString database_path;

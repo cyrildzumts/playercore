@@ -26,16 +26,7 @@ SettingManager::SettingManager() : SettingManager(QString())
 
 SettingManager::SettingManager(const QString &confPath)
 {
-    qDebug() << __FUNCTION__ << "Building Settings Object ";
-    if(!confPath.isEmpty())
-    {
-        conf = confPath;
-    }
-    else
-    {
-        conf = QDir::homePath() +  QString("/.Player/config/player.conf");
-    }
-    init();
+    init2();
 }
 
 SettingManager::~SettingManager()
@@ -274,11 +265,132 @@ void SettingManager::readJsonDocument(QJsonDocument &doc)
             qDebug() << __FUNCTION__ << "Could not open " << file.fileName()
                      << " in READYONLY mode" ;
             return ;
+    }
+}
+
+QJsonObject SettingManager::createApplicationEntry()
+{
+    QJsonObject app;
+    app.insert("author", createAuthorOject("cyrildz@gmail.com","Cyrille Ngassam Nkwenga" ));
+    app.insert("database", QDir::homePath()+"/.Player/config/player.db");
+    app.insert("name", "Player");
+    app.insert("source_dir", QDir::homePath()+"/"+"Music");
+    app.insert("version", "0.5.2");
+    app.insert("player", createPlayerObject());
+    return app;
+}
+
+QJsonObject SettingManager::createAuthorOject(const QString &email, const QString &name)
+{
+    QJsonObject author{
+        {"name", name},
+        {"email", email}
+    };
+    return author;
+}
+
+QJsonObject SettingManager::createPlayerObject()
+{
+    QJsonObject obj{
+        {"index", "0"},
+        {"playbackMode", "2"},
+        {"playlist", QJsonArray()},
+        {"position", "0"}
+    };
+    return obj;
+
+}
+
+QJsonArray SettingManager::createPlaylistJSONArray()
+{
+    return  QJsonArray();
+}
+
+QJsonArray SettingManager::createPlaylistJSONArray(std::vector<int> &tracks)
+{
+    QJsonArray arr;
+    std::for_each(tracks.begin(), tracks.end(), [&arr](int id){
+        arr.append(id);
+    });
+    return arr;
+}
+
+QJsonObject &SettingManager::addJSONObjectToRootObject(QJsonObject &root, const QString &key, const QJsonValue &value)
+{
+    if(!key.isEmpty())
+        root.insert(key, value);
+    return root;
+}
+
+bool SettingManager::createConfigFile()
+{
+    bool created = false;
+    QString appName = "Player";
+    QString appDirName = "." + appName;
+    QString confName = "player.conf";
+    QString configDirName = "config";
+    QString confDirPath = appDirName + "/" + configDirName;
+    QString configFilePath;
+    qDebug() << __FUNCTION__ << "Building Settings Object ";
+    {
+        QDir dir = QDir::home();
+        bool appDirCreated = dir.mkpath(confDirPath);
+        if(appDirCreated || dir.exists(appDirName)){
+            qDebug()<< "The player directory is created";
+            if(dir.cd(confDirPath)){
+                qDebug()<< "Inside config directory : " << dir.absolutePath();
+                configFilePath = dir.path() + "/" + confName;
+                QFile configFile(configFilePath);
+                configFile.open(QIODevice::WriteOnly);
+                created = true;
+            }
         }
+        conf = configFilePath;
+    }
+    return created;
+}
+
+bool SettingManager::configFileExist()
+{
+    bool ret = false;
+    QString conf = QDir::homePath()+"/.Player/config/player.conf";
+    ret = QFile::exists(conf);
+    if(ret){
+        this->conf = conf;
+    }
+    return QFile::exists(conf);
+}
+
+bool SettingManager::configFileIsEmpty()
+{
+    bool isEmpty = true;
+    QString conf = QDir::homePath()+"/.Player/config/player.conf";
+    QFile configFile(conf);
+    configFile.open(QIODevice::ReadOnly);
+    if(configFile.isOpen())
+       isEmpty = (configFile.size()== 0);
+    if(!isEmpty){
+        this->conf = conf;
+    }
+    return isEmpty;
+}
+
+void SettingManager::populateConfigFile()
+{
+    QJsonValue app_value = createApplicationEntry();
+    QJsonObject root;
+    root.insert("application", app_value);
+    QJsonDocument jsonfile{root};
+    QByteArray raw = jsonfile.toJson();
+    QFile configFile{conf};
+    configFile.open(QIODevice::WriteOnly);
+    QDataStream out(&configFile);
+    out.writeRawData(raw.data(), raw.size());
 }
 
 void SettingManager::init()
 {
+
     if(QFile::exists(conf))
        {
            file.setFileName(conf);
@@ -293,6 +405,19 @@ void SettingManager::init()
            throw InexistentConfigException(conf.toStdString().c_str());
        }
 
+}
+
+void SettingManager::init2()
+{
+    if(configFileExist()){
+        if(configFileIsEmpty()){
+            populateConfigFile();
+        }
+    }
+    else{
+        createConfigFile();
+        populateConfigFile();
+    }
 }
 
 
