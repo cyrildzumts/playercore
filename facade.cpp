@@ -130,9 +130,16 @@ void PlayerFacade::playPlaylist(const QString &title, int index)
 
 void PlayerFacade::playAlbum(const QString &album, int index)
 {
+    QString current_media;
     playlist->clear();
     playlist->addAlbum(album);
+    std::cout << __PRETTY_FUNCTION__ << " --  Playlist tracks count : " << playlist->mediaCount() << std::endl;
     playlist->setCurrentIndex(index);
+    current_media = playlist->media();
+    std::cout << __PRETTY_FUNCTION__ << " -- current media path : " << current_media.toStdString() << " -- current index : " 
+     << playlist->currentIndex() << std::endl ;
+
+    //playlist->showContents();
     player->setMedia(playlist->media());
     player->play();
     //Busmanager->nofity(playlist->album(),playlist->artist(), playlist->cover());

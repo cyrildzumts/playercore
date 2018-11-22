@@ -247,7 +247,11 @@ void Playlist::setCurrentIndex(int index)
     {
         _currentIndex = index;
         setTitle(_tracks.at(_currentIndex).albumTitle);
+        std::cout << __PRETTY_FUNCTION__ <<  "-- current index : " << _currentIndex << std::endl;
         Q_EMIT currentIndexChanged();
+    }
+    else{
+        std::cout << __PRETTY_FUNCTION__ <<  "-- current index  is invalide" << _currentIndex << std::endl;
     }
 
 }
@@ -278,7 +282,7 @@ void Playlist::addAlbum(const QString &album)
 
     Track track ;
     QSqlQuery query = data_access->query(
-                QString("SELECT * FROM BaseTableTracks where AlbumTitle='%1' ORDER BY trackNumber;").arg(album));
+                QString("SELECT * FROM BaseTableTracks where AlbumTitle='%1' ORDER BY trackNumber ASC;").arg(album));
     if(query.isActive())
         {
             while(query.next())
@@ -299,8 +303,11 @@ void Playlist::addAlbum(const QString &album)
                 track.year = query.value("year").toInt();
                 track.addedDate = query.value("addedDate").toInt();
                 track.modifiedDate = query.value("modifiedDate").toInt();
+                std::cout << "Cuurent track : " << track.title.toStdString() << "\n";
                 addMedia(track);
             }
+            std::cout << "Playlist Contents : \n";
+            showContents();
 
         }
         else
@@ -387,6 +394,7 @@ QString Playlist::media(int index) const
 
 QString Playlist::media() const
 {
+    std::cout << __PRETTY_FUNCTION__ << " --  Playlist tracks count : " << _tracks.size() <<" -- current index : " << _currentIndex << std::endl;
    return isIndexValid(_currentIndex) ? _tracks.at(_currentIndex).path : QString();
 }
 
@@ -395,6 +403,7 @@ void Playlist::setCurrentMedia(int index)
     if(isIndexValid(index))
     {
         _currentIndex = index;
+        std::cout << __PRETTY_FUNCTION__ << " --  Playlist tracks count : " << _tracks.size() << std::endl;
         _currentMedia = _tracks.at(_currentIndex).path;
         Q_EMIT currentIndexChanged();
     }

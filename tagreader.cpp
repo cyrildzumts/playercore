@@ -141,7 +141,7 @@ QString Tagreader::cover(const QString &audioFile)
 {
     QFileInfo file(audioFile);
     QString path = file.path();
-    QDirIterator workingDir (path, QStringList()<< "*.jpeg"<< "*.jpg" << "*.png" << "*.svg",QDir::Files | QDir::NoDotAndDotDot,QDirIterator::Subdirectories);
+    QDirIterator workingDir (path, QStringList()<<"cover.jpg"<<"front.jpg"<< "*.jpeg"<< "*.jpg" << "*.png" << "*.svg",QDir::Files | QDir::NoDotAndDotDot);
     if (workingDir.hasNext())
     {
         return QString(workingDir.next());
